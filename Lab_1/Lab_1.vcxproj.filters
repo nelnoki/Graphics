@@ -16,12 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\MySuper3DApp.cpp">
-      <Filter>Файлы ресурсов</Filter>
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="..\..\MyVeryFirstShader.hlsl">
-      <Filter>Файлы ресурсов</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>
