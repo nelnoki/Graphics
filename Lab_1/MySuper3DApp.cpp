@@ -167,11 +167,24 @@ int main()
 		return 0;
 	}
 
-	D3D_SHADER_MACRO Shader_Macros[] = { "TEST", "1", "TCOLOR", "float4(0.0f, 1.0f, 0.0f, 1.0f)", nullptr, nullptr };
+	D3D_SHADER_MACRO Shader_Macros[] = { 
+								"TEST", "1", 
+								"TCOLOR", "float4(0.0f, 0.0f, 1.0f, 1.0f)", 
+								nullptr, nullptr };
 
 	ID3DBlob* pixelBC;
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl", Shader_Macros /*macros*/, nullptr /*include*/, "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &pixelBC, &errorPixelCode);
+
+	res = D3DCompileFromFile(
+		L"./Shaders/MyVeryFirstShader.hlsl", 
+		Shader_Macros /*macros*/, 
+		nullptr /*include*/, 
+		"PSMain", 
+		"ps_5_0", 
+		D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 
+		0, 
+		&pixelBC, 
+		&errorPixelCode);
 
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
@@ -213,7 +226,7 @@ int main()
 		&layout);
 
 	DirectX::XMFLOAT4 points[8] = {
-		DirectX::XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
+		DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
 		DirectX::XMFLOAT4(-0.5f, -0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(0.5f, -0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
 		DirectX::XMFLOAT4(-0.5f, 0.5f, 0.5f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
@@ -236,7 +249,7 @@ int main()
 	ID3D11Buffer* vb;
 	device->CreateBuffer(&vertexBufDesc, &vertexData, &vb);
 
-	int indeces[] = { 0,1,2, 1,0,3 };
+	int indeces[] = { 1,2, /*, 1,0,3*/ };
 	D3D11_BUFFER_DESC indexBufDesc = {};
 	indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -332,10 +345,10 @@ int main()
 
 		context->OMSetRenderTargets(1, &rtv, nullptr);
 
-		float color[] = { totalTime, 0.1f, 0.1f, 1.0f };
+		float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		context->ClearRenderTargetView(rtv, color);
 
-		context->DrawIndexed(6, 0, 0);
+		context->DrawIndexed(3, 0, 0);
 
 		context->OMSetRenderTargets(0, nullptr, nullptr);
 
@@ -344,14 +357,3 @@ int main()
 
 	std::cout << "Hello World!\n";
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
