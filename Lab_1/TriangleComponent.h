@@ -46,4 +46,8 @@ private:
 	ID3D11Buffer* vb;
 	ID3D11Buffer* ib;
 
+	/*DirectX::SimpleMath::Matrix worldMatrix;
+	float rotationAngle;
+	ID3D11Buffer* constantBuffer;*/
+
 };

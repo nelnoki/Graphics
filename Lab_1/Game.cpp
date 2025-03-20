@@ -114,7 +114,11 @@ void Game::Update() {
 	EndFrame();
 }
 
-void Game::UpdateInternal() {}
+void Game::UpdateInternal() {
+	for (GameComponent* component : Components) {
+		component->Update();
+	}
+}
 
 void Game::Run() {
 
