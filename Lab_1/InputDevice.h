@@ -30,16 +30,6 @@ public:
 
 	MulticastDelegate<const MouseMoveEventArgs&> MouseMove;
 
-public:
-
-	InputDevice(Game* inGame);
-	~InputDevice();
-
-
-	void AddPressedKey(Keys key);
-	void RemovePressedKey(Keys key);
-	bool IsKeyDown(Keys key);
-
 protected:
 	struct KeyboardInputEventArgs {
 		/*
@@ -107,6 +97,16 @@ protected:
 		int X;
 		int Y;
 	};
+
+public:
+
+	InputDevice(Game* inGame);
+	~InputDevice();
+
+
+	void AddPressedKey(Keys key);
+	void RemovePressedKey(Keys key);
+	bool IsKeyDown(Keys key);
 
 	void OnKeyDown(KeyboardInputEventArgs args);
 	void OnMouseMove(RawMouseEventArgs args);

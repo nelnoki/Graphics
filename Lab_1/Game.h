@@ -22,19 +22,19 @@ class Game {
 
 private:
 	void createBackBuffer();
+	static Game* GameInstance;
+	Game() {};
 
 protected:
 	virtual void DestroyResources();
 	virtual void Draw();
 	virtual void EndFrame();
-	virtual void Initialize();
 	virtual void PrepareFrame();
 	virtual void PrepareResources();
 	virtual void Update();
 	virtual void UpdateInternal();
 
 public:
-	Game(LPCWSTR name, int screenWidth, int screenHeight);
 
 	ID3D11Texture2D* BackBuffer;
 	ID3D11DeviceContext* Context;
@@ -59,6 +59,14 @@ public:
 	void MessageHandler(MSG& msg, bool& isExitRequested);
 	void RestoreTargets();
 	void Run();
+	void Initialize(LPCWSTR name, int screenWidth, int screenHeight);
+
+	static Game* GetInstance() {
+		if (GameInstance == nullptr) {
+			GameInstance = new Game();
+		}
+		return GameInstance;
+	}
 	
 };
 

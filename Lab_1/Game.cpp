@@ -1,17 +1,17 @@
 #include "Game.h"
 
-Game::Game(LPCWSTR name, int screenWidth, int screenHeight) :
-	Name(name) {
-	Display = new DisplayWin32(name, screenWidth, screenHeight);
-	InDevice = new InputDevice(this);
-}
+Game* Game::GameInstance = nullptr;
 
 void Game::createBackBuffer() {
 	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);	// __uuidof(ID3D11Texture2D)
 	Device->CreateRenderTargetView(BackBuffer, nullptr, &RenderView);
 }
 
-void Game::Initialize() {
+void Game::Initialize(LPCWSTR name, int screenWidth, int screenHeight) {
+	Name = name;
+	Display = new DisplayWin32(name, screenWidth, screenHeight);
+	InDevice = new InputDevice(GetInstance());
+
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
@@ -51,10 +51,6 @@ void Game::Initialize() {
 	}
 
 	createBackBuffer();
-
-	for (GameComponent* component : Components) {
-		component->Initialize();
-	}
 }
 
 void Game::PrepareResources() {
@@ -122,7 +118,9 @@ void Game::UpdateInternal() {}
 
 void Game::Run() {
 
-	Initialize();
+	for (GameComponent* component : Components) {
+		component->Initialize();
+	}
 
 	PrevTime = std::chrono::steady_clock::now();
 	TotalTime = 0;

@@ -4,6 +4,11 @@
 #include <WinUser.h>
 #include <iostream>
 
+
+class Game;
+class InputDevice;
+
+
 class DisplayWin32 {
 
 public:
@@ -15,4 +20,5 @@ public:
 	HWND hWnd;
 	WNDCLASSEX wc;
 
+	//LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 };
