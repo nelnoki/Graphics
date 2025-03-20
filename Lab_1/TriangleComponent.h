@@ -7,11 +7,14 @@
 #include <d3dcompiler.h>
 #include <directxmath.h>
 #include <vector>
+#include <SimpleMath.h>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
+
+using namespace DirectX::SimpleMath;
 
 #include "GameComponent.h"
 
@@ -24,11 +27,19 @@ public:
 	void Update() override;
 	void Reload() override;
 	
-	TriangleComponent(Game* game, LPCWSTR shader,
-		std::vector<DirectX::XMFLOAT4> points, std::vector<int> indeces,
-		std::vector<UINT> strides = { 32 }, std::vector<UINT> offsets = { 0 });
-	
+	TriangleComponent(
+		Game* game, 
+		std::vector<DirectX::XMFLOAT4> points = {
+		DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) }, 
+		std::vector<int> indeces = { 0,1,2, 0,1,3 },
+		std::vector<UINT> strides = { 32 }, 
+		std::vector<UINT> offsets = { 0 },
+		LPCWSTR shader = L"./Shaders/MyVeryFirstShader.hlsl" );
 
+	DirectX::SimpleMath::Matrix worldMatrix;
 
 private:
 
@@ -46,8 +57,5 @@ private:
 	ID3D11Buffer* vb;
 	ID3D11Buffer* ib;
 
-	/*DirectX::SimpleMath::Matrix worldMatrix;
-	float rotationAngle;
-	ID3D11Buffer* constantBuffer;*/
-
+	ID3D11Buffer* constantBuffer;
 };

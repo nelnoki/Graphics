@@ -1,16 +1,28 @@
 #include "TriangleComponent.h"
 #include "Game.h"
 
-TriangleComponent::TriangleComponent(Game* game, LPCWSTR shader,
-	std::vector<DirectX::XMFLOAT4> points, std::vector<int> indeces,
-	std::vector<UINT> strides, std::vector<UINT> offsets) 
-	: GameComponent(game), shaderSource(shader), points(points), indeces(indeces), strides(strides), offsets(offsets)   {}
+TriangleComponent::TriangleComponent(
+	Game* game,
+	std::vector<DirectX::XMFLOAT4> points, 
+	std::vector<int> indeces,
+	std::vector<UINT> strides, 
+	std::vector<UINT> offsets, 
+	LPCWSTR shader)
+	: 
+	GameComponent(game), 
+	points(points), 
+	indeces(indeces), 
+	strides(strides), 
+	offsets(offsets),
+	shaderSource(shader),
+	worldMatrix(DirectX::SimpleMath::Matrix::Identity) {}
 
 void TriangleComponent::Initialize() {
 
 	ID3DBlob* errorVertexCode = nullptr;
 
-	auto res = D3DCompileFromFile(shaderSource,
+	auto res = D3DCompileFromFile(
+		shaderSource,
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"VSMain",
@@ -126,11 +138,11 @@ void TriangleComponent::Initialize() {
 
 	res = game->Device->CreateRasterizerState(&rastDesc, &rastState);
 
-	//D3D11_BUFFER_DESC constBufDesc = {};
-	//constBufDesc.ByteWidth = sizeof(DirectX::SimpleMath::Matrix);
-	//constBufDesc.Usage = D3D11_USAGE_DEFAULT;
-	//constBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//game->Device->CreateBuffer(&constBufDesc, nullptr, &constantBuffer);
+	D3D11_BUFFER_DESC constBufDesc = {};
+	constBufDesc.ByteWidth = sizeof(DirectX::SimpleMath::Matrix);
+	constBufDesc.Usage = D3D11_USAGE_DEFAULT;
+	constBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	game->Device->CreateBuffer(&constBufDesc, nullptr, &constantBuffer);
 
 }
 
@@ -147,8 +159,8 @@ void TriangleComponent::Draw() {
 	game->Context->VSSetShader(vertexShader, nullptr, 0);
 	game->Context->PSSetShader(pixelShader, nullptr, 0);
 
-	/*game->Context->UpdateSubresource(constantBuffer, 0, nullptr, &worldMatrix, 0, 0);
-	game->Context->VSSetConstantBuffers(0, 1, &constantBuffer);*/
+	game->Context->UpdateSubresource(constantBuffer, 0, nullptr, &worldMatrix, 0, 0);
+	game->Context->VSSetConstantBuffers(0, 1, &constantBuffer);
 
 	game->Context->DrawIndexed(indeces.size(), 0, 0);
 }
@@ -166,25 +178,9 @@ void TriangleComponent::DestroyResources() {
 
 	ib->Release();
 	vb->Release();
-	//constantBuffer->Release();
+	constantBuffer->Release();
 }
 
-void TriangleComponent::Update() {
-	//// Обновляем угол поворота
-	//rotationAngle += 0.01f; // Скорость вращения
-	//if (rotationAngle > 360.0f) rotationAngle -= 360.0f;
-
-	//// Находим центр нижней стороны прямоугольника
-	//DirectX::SimpleMath::Vector3 centerBottom(
-	//	(points[1].x + points[3].x) / 2.0f, // Средняя точка по X
-	//	points[1].y,                        // Нижняя сторона по Y
-	//	(points[1].z + points[3].z) / 2.0f  // Средняя точка по Z
-	//);
-
-	//// Создаем матрицу вращения вокруг центра нижней стороны
-	//worldMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(-centerBottom) *
-	//	DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
-	//	DirectX::SimpleMath::Matrix::CreateTranslation(centerBottom);
-}
+void TriangleComponent::Update() {}
 
 void TriangleComponent::Reload() {}

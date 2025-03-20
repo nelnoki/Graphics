@@ -1,3 +1,8 @@
+cbuffer ConstantBuffer : register(b0)
+{
+    matrix World;
+};
+
 struct VS_IN
 {
 	float4 pos : POSITION0;
@@ -14,7 +19,7 @@ PS_IN VSMain( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 	
-	output.pos = input.pos;
+    output.pos = mul(input.pos, World);
 	output.col = input.col;
 	
 	return output;
