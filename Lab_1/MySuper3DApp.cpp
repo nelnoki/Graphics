@@ -18,7 +18,7 @@
 #pragma comment(lib, "dxguid.lib")
 
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_copy(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch (umessage)
 	{
@@ -38,8 +38,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 }
 
 
-int main()
-{
+int main_cpy() {
 	LPCWSTR applicationName = L"My3DApp";
 	HINSTANCE hInstance = GetModuleHandle(nullptr);
 
@@ -47,7 +46,7 @@ int main()
 	WNDCLASSEX wc;
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
+	wc.lpfnWndProc = WndProc_copy;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
