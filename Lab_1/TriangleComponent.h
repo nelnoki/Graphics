@@ -40,6 +40,7 @@ public:
 		LPCWSTR shader = L"./Shaders/MyVeryFirstShader.hlsl" );
 
 	DirectX::SimpleMath::Matrix worldMatrix;
+	std::vector<DirectX::XMFLOAT4> points;
 
 private:
 
@@ -47,7 +48,6 @@ private:
 	ID3D11InputLayout* layout;
 	ID3D11PixelShader* pixelShader;
 	ID3DBlob* pixelShaderByteCode;
-	std::vector<DirectX::XMFLOAT4> points;
 	ID3D11RasterizerState* rastState;
 	ID3D11VertexShader* vertexShader;
 	ID3DBlob* vertexShaderByteCode;

@@ -13,14 +13,13 @@ public:
 	void Initialize() override;
 	void Reload() override;
 	void Update() override;
-
-private:
-	float rotationSpeed;
-	float rotationAngle;
-	float shootSpeed;
+	float rotationSpeed = 0.0f;
+	float rotationAngle = 0.0f;
+	float shootSpeed = 3.0f;
 	DirectX::SimpleMath::Vector3 bulletPos;
 	DirectX::SimpleMath::Matrix worldMatrix;
 	TriangleComponent* cannon;
+	std::vector<TriangleComponent*> bullets;
 	TriangleComponent* bullet;
 };
 
