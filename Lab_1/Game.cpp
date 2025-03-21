@@ -2,10 +2,7 @@
 
 Game* Game::GameInstance = nullptr;
 
-void Game::createBackBuffer() {
-	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);	// __uuidof(ID3D11Texture2D)
-	Device->CreateRenderTargetView(BackBuffer, nullptr, &RenderView);
-}
+
 
 void Game::Initialize(LPCWSTR name, int screenWidth, int screenHeight) {
 	Name = name;
@@ -53,8 +50,26 @@ void Game::Initialize(LPCWSTR name, int screenWidth, int screenHeight) {
 	createBackBuffer();
 }
 
-void Game::PrepareResources() {
+void Game::PrepareResources() {}
 
+void Game::Run() {
+
+	for (GameComponent* component : Components) {
+		component->Initialize();
+	}
+
+	PrevTime = std::chrono::steady_clock::now();
+	TotalTime = 0;
+	FrameCount = 0;
+	
+	MSG msg = {};
+	bool isExitRequested = false;
+
+	while (!isExitRequested) {
+		MessageHandler(msg, isExitRequested);
+		Update();
+	}
+	Exit();
 }
 
 void Game::Draw() {
@@ -71,21 +86,6 @@ void Game::Draw() {
 
 	SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
-
-void Game::PrepareFrame() {
-		Context->ClearState();
-
-		D3D11_VIEWPORT viewport = {};
-		viewport.Width = static_cast<float>(Display->ClientWidth);
-		viewport.Height = static_cast<float>(Display->ClientHeight);
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		viewport.MinDepth = 0;
-		viewport.MaxDepth = 1.0f;
-
-		Context->RSSetViewports(1, &viewport);
-}
-void Game::EndFrame() {}
 
 void Game::Update() {
 	PrepareFrame();
@@ -115,30 +115,26 @@ void Game::Update() {
 }
 
 void Game::UpdateInternal() {
-	for (GameComponent* component : Components) {
+	for (auto component : Components) {
 		component->Update();
 	}
 }
 
-void Game::Run() {
+void Game::PrepareFrame() {
+		Context->ClearState();
 
-	for (GameComponent* component : Components) {
-		component->Initialize();
-	}
+		D3D11_VIEWPORT viewport = {};
+		viewport.Width = static_cast<float>(Display->ClientWidth);
+		viewport.Height = static_cast<float>(Display->ClientHeight);
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1.0f;
 
-	PrevTime = std::chrono::steady_clock::now();
-	TotalTime = 0;
-	FrameCount = 0;
-	
-	MSG msg = {};
-	bool isExitRequested = false;
-
-	while (!isExitRequested) {
-		MessageHandler(msg, isExitRequested);
-		Update();
-	}
-	Exit();
+		Context->RSSetViewports(1, &viewport);
 }
+
+void Game::EndFrame() {}
 
 void Game::DestroyResources() {
 	delete Display;
@@ -162,6 +158,7 @@ void Game::Exit() {
 	DestroyResources();
 }
 
+void Game::RestoreTargets() {}
 
 void Game::MessageHandler(MSG &msg, bool &isExitRequested)
 {
@@ -176,4 +173,8 @@ void Game::MessageHandler(MSG &msg, bool &isExitRequested)
 	}
 }
 
-void Game::RestoreTargets() {}
+void Game::createBackBuffer() {
+	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);	// __uuidof(ID3D11Texture2D)
+	Device->CreateRenderTargetView(BackBuffer, nullptr, &RenderView);
+}
+

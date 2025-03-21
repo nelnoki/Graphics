@@ -51,7 +51,7 @@ public:
 	float TotalTime;
 	float DeltaTime;
 	unsigned int FrameCount;
-	std::vector<GameComponent*> Components;
+	std::vector<GameComponent*> Components; //= std::vector<GameComponent*> (128,0);
 	DisplayWin32* Display;
 	InputDevice* InDevice;
 	

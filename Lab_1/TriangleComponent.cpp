@@ -178,6 +178,7 @@ void TriangleComponent::DestroyResources() {
 
 	ib->Release();
 	vb->Release();
+
 	constantBuffer->Release();
 }
 
