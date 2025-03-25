@@ -31,9 +31,9 @@ void Pong::Draw() {
 
 void Pong::Update() {
 	
-	player1->Update(Keys::W, Keys::S);
-	player2->Update(Keys::Up, Keys::Down);
-	ball->Update();
+	player1->Move(Keys::W, Keys::S);
+	player2->Move(Keys::Up, Keys::Down);
+	ball->Move();
 
 	auto ballSphere = ball->GetBoundingSphere();
 	auto p1Box = player1->GetBoundingBox();
@@ -50,10 +50,16 @@ void Pong::Update() {
 
 
 	if (abs(ball->pos.x) > 1.05f) {
+		if (ball->pos.x > 0.0f) {
+			player1->score++;
+		}
+
+		else {
+			player2->score++;
+		}
+
 		ResetBall();
-		
-		if (ball->pos.x > 0) player1->score++;
-		else player2->score++;
+			
 		std::cout << "Score: " << player1->score << " - " << player2->score << "\n";
 	}
 }
@@ -61,12 +67,8 @@ void Pong::Update() {
 void Pong::HandlePaddleCollision(Player* player) {
 
 	float hitPosition = (ball->pos.y - player->pos.y) / player->scale.y;
-	hitPosition = abs(-1.0f - hitPosition) < abs(1.0f - hitPosition) ? -1.0f : 1.0f;
 
-
-	float maxAngle = DirectX::XM_PIDIV2 * 0.75f; // ~67.5 
-	float angle = hitPosition * maxAngle;
-
+	float angle = hitPosition * MAX_BOUNCE_ANGLE;
 
 	float directionX = (player == player1) ? 1.0f : -1.0f;
 
@@ -96,18 +98,17 @@ void Pong::DestroyResources() {
 	ball->DestroyResources();
 }
 
-void Pong::Player::Update(Keys up, Keys down) {
+void Pong::Player::Move(Keys up, Keys down) {
 	if (game->InDevice->IsKeyDown(up)) pos.y += speed;
 	
 	if (game->InDevice->IsKeyDown(down)) pos.y -= speed;
 
-	const float screenTop = 1.0f;
-	const float screenBottom = -1.0f;
-	if (pos.y + scale.y > screenTop) {
-		pos.y = screenTop - scale.y;
+	
+	if (pos.y + scale.y > SCREEN_TOP) {
+		pos.y = SCREEN_TOP - scale.y;
 	}
-	else if (pos.y - scale.y < screenBottom) {
-		pos.y = screenBottom + scale.y;
+	else if (pos.y - scale.y < SCREEN_BOTTOM) {
+		pos.y = SCREEN_BOTTOM + scale.y;
 	}
 
 	worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(scale) *
@@ -117,19 +118,26 @@ void Pong::Player::Update(Keys up, Keys down) {
 	worldMatrix = worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
 }
 
-void Pong::Ball::Update() {
+void Pong::Ball::Move() {
 	pos.x += direction.x * speed * game->DeltaTime;
 	pos.y += direction.y * speed * game->DeltaTime;
+	
 
-	const float screenTop = 1.0f;
-	const float screenBottom = -1.0f;
-	if (pos.y + radius > screenTop) {
+	if (pos.y + radius > SCREEN_TOP) {
 		direction.y = -abs(direction.y); 
-		pos.y = screenTop - radius;
+		pos.y = SCREEN_TOP - radius;
 	}
-	else if (pos.y - radius < screenBottom) {
+	else if (pos.y - radius < SCREEN_BOTTOM) {
 		direction.y = abs(direction.y); 
-		pos.y = screenBottom + radius;
+		pos.y = SCREEN_BOTTOM + radius;
+	}
+
+	if (abs(direction.x) < MIN_HORIZONTAL) {
+		float signX = (direction.x > 0) ? 1.0f : -1.0f;
+		float newY = direction.y / sqrt(direction.x * direction.x + direction.y * direction.y);
+
+		direction.y = newY * sqrt(1.0f - MIN_HORIZONTAL * MIN_HORIZONTAL);
+		direction.x = signX * MIN_HORIZONTAL;
 	}
 
 	worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(scale) *

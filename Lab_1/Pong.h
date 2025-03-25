@@ -15,7 +15,10 @@ public:
 	void Reload() override;
 	void Update() override;
 
-	
+	static constexpr float SCREEN_TOP = 1.0f;
+	static constexpr float SCREEN_BOTTOM = -1.0f;
+	static constexpr float MAX_BOUNCE_ANGLE = DirectX::XM_PIDIV2 * 0.75f; // ~67.5 
+	static constexpr float MIN_HORIZONTAL = 0.3f;
 
 	class Player : public TriangleComponent {
 	public:
@@ -50,7 +53,7 @@ public:
 			0.0f
 		);
 
-		void Update(Keys up, Keys down);
+		void Move(Keys up, Keys down);
 
 		DirectX::BoundingBox GetBoundingBox() const {
 			Vector3 extents(scale.x, scale.y, 0.1f);
@@ -94,7 +97,7 @@ public:
 			0.0f
 		);
 
-		void Update() override;
+		void Move();
 
 		DirectX::BoundingSphere GetBoundingSphere() const {
 			return DirectX::BoundingSphere(pos, scale.x);
