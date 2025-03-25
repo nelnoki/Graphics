@@ -18,26 +18,20 @@ public:
 	float rotationSpeed = 0.02f;
 	float movingSpeed = 0.005f;
 	float rotationAngle = 3.14f / 2;
+
 	float shootInterval = 0.2f;
 	float lastShotTime = -1.0f;
 	float shootSpeed = 0.8f;
-	DirectX::SimpleMath::Vector3 bulletPos;
 	
-	DirectX::SimpleMath::Vector3 cannonPos = Vector3(
+	DirectX::SimpleMath::Vector3 pos = Vector3(
 		0.0f,
 		0.0f,
 		0.0f
 	);
 
-	DirectX::SimpleMath::Vector3 cannonScale = Vector3(
+	DirectX::SimpleMath::Vector3 scale = Vector3(
 		0.15f,
 		0.075f,
-		0.0f
-	);
-
-	DirectX::SimpleMath::Vector3 bulletScale = Vector3(
-		0.05f,
-		0.05f,
 		0.0f
 	);
 
@@ -46,19 +40,24 @@ public:
 		Bullet(
 			Game* game,
 			std::vector<DirectX::XMFLOAT4> points = {
-			DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-			DirectX::XMFLOAT4(-1.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
-			DirectX::XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
-			std::vector<int> indeces = { 0,1,2 } )
-
-			: TriangleComponent(
-				game,
-				points,
-				indeces) {};
+				DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+				DirectX::XMFLOAT4(-1.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+				DirectX::XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) },
+			std::vector<int> indeces = { 0,1,2 } 
+		)
+		: TriangleComponent(
+			game,
+			points,
+			indeces) {};
 
 		DirectX::SimpleMath::Vector2 direction;
-	};
 
+		DirectX::SimpleMath::Vector3 scale = Vector3(
+			0.05f,
+			0.05f,
+			0.0f
+		);
+	};
 
 	std::vector<Bullet*> bullets;
 };

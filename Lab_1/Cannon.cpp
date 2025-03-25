@@ -1,6 +1,5 @@
 #include "Cannon.h"
 #include "Game.h"
-#include <cmath>
 
 void Cannon::Initialize() {
 	cannon = new TriangleComponent(game, 
@@ -33,30 +32,30 @@ void Cannon::Update() {
 	}
 
 	if (game->InDevice->IsKeyDown(Keys::W)) {
-		cannonPos.y += movingSpeed;
+		pos.y += movingSpeed;
 	}
 
 	if (game->InDevice->IsKeyDown(Keys::S)) {
-		cannonPos.y -= movingSpeed;
+		pos.y -= movingSpeed;
 	}
 
 	if (game->InDevice->IsKeyDown(Keys::D)) {
-		cannonPos.x += movingSpeed;
+		pos.x += movingSpeed;
 	}
 
 	if (game->InDevice->IsKeyDown(Keys::A)) {
-		cannonPos.x -= movingSpeed;
+		pos.x -= movingSpeed;
 	}
 
-	cannon->worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(cannonScale) *
+	cannon->worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(scale) *
 		DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cannonPos);
+		DirectX::SimpleMath::Matrix::CreateTranslation(pos);
 
 	cannon->worldMatrix = cannon->worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
 
 	if (game->InDevice->IsKeyDown(Keys::Space)) {
 
-		if (std::abs(game->TotalTime - lastShotTime) >= shootInterval) {
+		if (abs(game->TotalTime - lastShotTime) >= shootInterval) {
 			Bullet* bullet = new Bullet(game);
 
 			bullet->Initialize();
@@ -72,7 +71,7 @@ void Cannon::Update() {
 				DirectX::SimpleMath::Vector3::Transform(localGunEnd, cannon->worldMatrix.DirectX::SimpleMath::Matrix::Transpose());
 
 			bullet->worldMatrix =
-				DirectX::SimpleMath::Matrix::CreateScale(bulletScale) *
+				DirectX::SimpleMath::Matrix::CreateScale(bullet->scale) *
 				DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
 				DirectX::SimpleMath::Matrix::CreateTranslation(bulletPos);
 
