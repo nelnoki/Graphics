@@ -6,14 +6,14 @@
 int main() {
 	int screenWidth = 1000;
 	int screenHeight = 1000;
+	LPCWSTR name = L"Graphics";
 
-	Game* game = Game::GetInstance();
-	game->Initialize(L"Graphics", screenWidth, screenHeight);
+	Game* game = new Game(name, screenWidth, screenHeight);
 
 	Cannon* cannon = new Cannon(game);
 	Pong* pong = new Pong(game);
 
-	int ans;
+	/*int ans;
 	std::cout <<
 		"Press \n" <<
 		"1 - Cannon \n" <<
@@ -31,6 +31,10 @@ int main() {
 			game->Components.push_back(pong);
 			break;
 		}
-	}
+	}*/
+
+	//game->Components.push_back(cannon);
+	game->Components.push_back(pong);
+
 	game->Run();
 }

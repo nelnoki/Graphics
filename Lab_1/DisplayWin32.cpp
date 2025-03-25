@@ -1,72 +1,11 @@
 #include "DisplayWin32.h"
 #include "Game.h"
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam) {
-	switch (umessage) {
-		case WM_KEYDOWN: {
-			// If a key is pressed send it to the input object so it can record that state.
-			//std::cout << "Key: " << static_cast<unsigned int>(wparam) << std::endl;
-
-			if (static_cast<unsigned int>(wparam) == 27) PostQuitMessage(0);
-			return 0;
-		}
-		default: {
-			return DefWindowProc(hwnd, umessage, wparam, lparam);
-		}
-
-		case WM_INPUT: {
-			UINT dwSize = 0;
-			GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
-			LPBYTE lpb = new BYTE[dwSize];
-			if (lpb == nullptr) {
-				return 0;
-			}
-
-			if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
-				OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
-
-			RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(lpb);
-
-			if (raw->header.dwType == RIM_TYPEKEYBOARD) {
-				//printf(" Kbd: make=%04i Flags:%04i Reserved:%04i ExtraInformation:%08i, msg=%04i VK=%i \n",
-				//	raw->data.keyboard.MakeCode,
-				//	raw->data.keyboard.Flags,
-				//	raw->data.keyboard.Reserved,
-				//	raw->data.keyboard.ExtraInformation,
-				//	raw->data.keyboard.Message,
-				//	raw->data.keyboard.VKey);
-
-				Game::GetInstance()->InDevice->OnKeyDown({
-					raw->data.keyboard.MakeCode,
-					raw->data.keyboard.Flags,
-					raw->data.keyboard.VKey,
-					raw->data.keyboard.Message
-					});
-			}
-			else if (raw->header.dwType == RIM_TYPEMOUSE) {
-				//printf(" Mouse: X=%04d Y:%04d \n", raw->data.mouse.lLastX, raw->data.mouse.lLastY);
-				Game::GetInstance()->InDevice->OnMouseMove({
-					raw->data.mouse.usFlags,
-					raw->data.mouse.usButtonFlags,
-					static_cast<int>(raw->data.mouse.ulExtraInformation),
-					static_cast<int>(raw->data.mouse.ulRawButtons),
-					static_cast<short>(raw->data.mouse.usButtonData),
-					raw->data.mouse.lLastX,
-					raw->data.mouse.lLastY
-					});
-			}
-
-			delete[] lpb;
-			return DefWindowProc(hwnd, umessage, wparam, lparam);
-		}
-	}
-}
-
-DisplayWin32::DisplayWin32 (LPCWSTR applicationName, int screenWidth, int screenHeight, HINSTANCE hInst)
-	: ClientWidth(screenWidth), ClientHeight(screenHeight), hInstance(hInst) {
+DisplayWin32::DisplayWin32 (Game* g, LPCWSTR applicationName, int screenWidth, int screenHeight, HINSTANCE hInst)
+	: game(g), ClientWidth(screenWidth), ClientHeight(screenHeight), hInstance(hInst) {
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
+	wc.lpfnWndProc = Game::WndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
@@ -97,11 +36,23 @@ DisplayWin32::DisplayWin32 (LPCWSTR applicationName, int screenWidth, int screen
 		posX, posY,
 		windowRect.right - windowRect.left,
 		windowRect.bottom - windowRect.top,
-		nullptr, nullptr, hInstance, nullptr);
+		nullptr, nullptr, hInstance, game);
 
 	ShowWindow(hWnd, SW_SHOW);
 	SetForegroundWindow(hWnd);
 	SetFocus(hWnd);
 
 	ShowCursor(true);
+
+	RAWINPUTDEVICE Rid[1];
+
+	Rid[0].usUsagePage = 0x01;          // HID_USAGE_PAGE_GENERIC
+	Rid[0].usUsage = 0x02;              // HID_USAGE_GENERIC_MOUSE
+	Rid[0].dwFlags = 0;
+	Rid[0].hwndTarget = 0;
+
+	if (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == FALSE)
+	{
+		// Registration failed. Call GetLastError for the cause of the error
+	}
 }

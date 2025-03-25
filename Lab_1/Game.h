@@ -22,8 +22,6 @@ class Game {
 
 private:
 	void createBackBuffer();
-	static Game* GameInstance;
-	Game() {};
 
 protected:
 	virtual void DestroyResources();
@@ -35,13 +33,13 @@ protected:
 	virtual void UpdateInternal();
 
 public:
-
+	Game(LPCWSTR name, int screenWidth, int screenHeight);
+	virtual ~Game();
 	ID3D11Texture2D* BackBuffer;
 	ID3D11DeviceContext* Context;
 	int DebugAnnotation;
 	Microsoft::WRL::ComPtr<ID3D11Device> Device;
 	HINSTANCE Instance;
-	LPCWSTR Name;
 	ID3D11Texture2D* RenderSRV;
 	ID3D11RenderTargetView* RenderView;
 	IDXGISwapChain* SwapChain;
@@ -51,7 +49,7 @@ public:
 	float TotalTime;
 	float DeltaTime;
 	unsigned int FrameCount;
-	std::vector<GameComponent*> Components; //= std::vector<GameComponent*> (128,0);
+	std::vector<GameComponent*> Components; 
 	DisplayWin32* Display;
 	InputDevice* InDevice;
 	
@@ -59,14 +57,8 @@ public:
 	void MessageHandler(MSG& msg, bool& isExitRequested);
 	void RestoreTargets();
 	void Run();
-	void Initialize(LPCWSTR name, int screenWidth, int screenHeight);
+	void Initialize();
 
-	static Game* GetInstance() {
-		if (GameInstance == nullptr) {
-			GameInstance = new Game();
-		}
-		return GameInstance;
-	}
-	
+	static LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 };
 
