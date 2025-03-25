@@ -16,13 +16,14 @@ public:
 
 	TriangleComponent* cannon;
 	float rotationSpeed = 0.02f;
+	float movingSpeed = 0.005f;
 	float rotationAngle = 3.14f / 2;
 	float shootInterval = 0.2f;
 	float lastShotTime = -1.0f;
 	float shootSpeed = 0.8f;
 	DirectX::SimpleMath::Vector3 bulletPos;
 	
-	DirectX::SimpleMath::Vector3 cannonCenter = Vector3(
+	DirectX::SimpleMath::Vector3 cannonPos = Vector3(
 		0.0f,
 		0.0f,
 		0.0f

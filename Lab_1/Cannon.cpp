@@ -24,19 +24,33 @@ void Cannon::Draw() {
 
 void Cannon::Update() {
 
-	if (game->InDevice->IsKeyDown(Keys::D)) {
+	if (game->InDevice->IsKeyDown(Keys::E)) {
 		rotationAngle -= rotationSpeed;
 	}
 
-	if (game->InDevice->IsKeyDown(Keys::A)) {
+	if (game->InDevice->IsKeyDown(Keys::Q)) {
 		rotationAngle += rotationSpeed;
+	}
+
+	if (game->InDevice->IsKeyDown(Keys::W)) {
+		cannonPos.y += movingSpeed;
+	}
+
+	if (game->InDevice->IsKeyDown(Keys::S)) {
+		cannonPos.y -= movingSpeed;
+	}
+
+	if (game->InDevice->IsKeyDown(Keys::D)) {
+		cannonPos.x += movingSpeed;
+	}
+
+	if (game->InDevice->IsKeyDown(Keys::A)) {
+		cannonPos.x -= movingSpeed;
 	}
 
 	cannon->worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(cannonScale) *
 		DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(cannonCenter);
-
-
+		DirectX::SimpleMath::Matrix::CreateTranslation(cannonPos);
 
 	cannon->worldMatrix = cannon->worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
 
