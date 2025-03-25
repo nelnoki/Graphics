@@ -134,7 +134,9 @@ void Game::PrepareFrame() {
 		Context->RSSetViewports(1, &viewport);
 }
 
-void Game::EndFrame() {}
+void Game::EndFrame() {
+	InDevice->EndFrame();
+}
 
 void Game::DestroyResources() {
 	delete Display;

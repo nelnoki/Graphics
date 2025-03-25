@@ -12,6 +12,7 @@ using namespace DirectX::SimpleMath;
 
 InputDevice::InputDevice(Game* inGame) : game(inGame) {
 	keys = new std::unordered_set<Keys>();
+	prevKeys = new std::unordered_set<Keys>();
 
 	RAWINPUTDEVICE Rid[2];
 
@@ -100,3 +101,10 @@ bool InputDevice::IsKeyDown(Keys key) {
 	return keys->count(key);
 }
 
+void InputDevice::EndFrame() {
+	*prevKeys = *keys;
+}
+
+bool InputDevice::IsKeyPressed(Keys key) {
+	return IsKeyDown(key) && !prevKeys->count(key);
+}

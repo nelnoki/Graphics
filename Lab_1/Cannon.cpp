@@ -1,12 +1,18 @@
 #include "Cannon.h"
 #include "Game.h"
+#include <cmath>
 
 void Cannon::Initialize() {
-	cannon = new TriangleComponent(game);
-	cannon->Initialize();
-	
+	cannon = new TriangleComponent(game, 
+		{
+		DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)
+		},
+		{ 0,1,2, 0,1,3 });
 
-	
+	cannon->Initialize();
 }
 
 void Cannon::Draw() {
@@ -24,60 +30,48 @@ void Cannon::Update() {
 
 	if (game->InDevice->IsKeyDown(Keys::A)) {
 		rotationAngle += rotationSpeed;
-
 	}
 
-	if (rotationAngle > 360.0f) rotationAngle -= 360.0f;
-
-	DirectX::SimpleMath::Vector3 center(
-		0.0f,
-		0.0f,
-		0.0f
-	);
-
-	DirectX::SimpleMath::Vector3 scale(
-		0.05f,
-		0.1f,
-		0.0f
-	);
-
-	cannon->worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(scale) *
+	cannon->worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(cannonScale) *
 		DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
-		DirectX::SimpleMath::Matrix::CreateTranslation(center);
+		DirectX::SimpleMath::Matrix::CreateTranslation(cannonCenter);
+
+
 
 	cannon->worldMatrix = cannon->worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
 
 	if (game->InDevice->IsKeyDown(Keys::Space)) {
 
-		TriangleComponent* bullet = new TriangleComponent
-		(game,
-			{
-			DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f),
-			DirectX::XMFLOAT4(-1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f),
-			DirectX::XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f),	DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f)
-			},
-			{ 0,1,2 }
-		);
-		bullet->Initialize();
+		if (std::abs(game->TotalTime - lastShotTime) >= shootInterval) {
+			Bullet* bullet = new Bullet(game);
 
-		bullet->worldMatrix =
-			DirectX::SimpleMath::Matrix::CreateScale(Vector3(0.1f, 0.1f, 0.1f)) *
-			DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
-			DirectX::SimpleMath::Matrix::CreateTranslation(center);
+			bullet->Initialize();
 
-		bullets.push_back(bullet);
+			bullet->direction = Vector2(
+				cos(rotationAngle),
+				sin(rotationAngle)
+			);
+
+			DirectX::SimpleMath::Vector3 localGunEnd(1.0f, 0.0f, 0.0f);
+
+			DirectX::SimpleMath::Vector3 bulletPos =
+				DirectX::SimpleMath::Vector3::Transform(localGunEnd, cannon->worldMatrix.DirectX::SimpleMath::Matrix::Transpose());
+
+			bullet->worldMatrix =
+				DirectX::SimpleMath::Matrix::CreateScale(bulletScale) *
+				DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
+				DirectX::SimpleMath::Matrix::CreateTranslation(bulletPos);
+
+			bullet->worldMatrix = bullet->worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
+
+			bullets.push_back(bullet);
+			lastShotTime = game->TotalTime;
+		}
 	}
 
-	for (auto bullet : bullets) {
-		Vector3 velocity(
-			shootSpeed * game->DeltaTime,
-			shootSpeed * game->DeltaTime,
-			0.0f
-		);
-		bullet->worldMatrix *=
-			DirectX::SimpleMath::Matrix::CreateTranslation(velocity);
-
-		bullet->worldMatrix = bullet->worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
+	for (Bullet* bullet : bullets) {
+		bullet->worldMatrix._14 += bullet->direction.x * shootSpeed * game->DeltaTime;
+		bullet->worldMatrix._24 += bullet->direction.y * shootSpeed * game->DeltaTime;
 	}
 }
 

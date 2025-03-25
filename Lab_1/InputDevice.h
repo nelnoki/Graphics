@@ -14,6 +14,7 @@ class InputDevice {
 	Game* game;
 
 	std::unordered_set<Keys>* keys;
+	std::unordered_set<Keys>* prevKeys;
 
 public:
 
@@ -110,6 +111,9 @@ public:
 
 	void OnKeyDown(KeyboardInputEventArgs args);
 	void OnMouseMove(RawMouseEventArgs args);
+
+	void EndFrame();
+	bool IsKeyPressed(Keys key);
 };
 
 /*
