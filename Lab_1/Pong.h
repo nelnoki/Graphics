@@ -39,7 +39,7 @@ public:
 				indeces) {
 		};
 
-		float speed = 0.005f;
+		float speed = 0.007f;
 		int score = 0;
 
 		DirectX::SimpleMath::Vector3 scale = Vector3(

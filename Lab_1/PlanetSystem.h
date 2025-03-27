@@ -12,9 +12,9 @@ public:
 
 	PlanetSystem(
 		Game* game, 
-		int planetNumber = 30, 
-		std::vector<int> hasMoon = { 1,2,3,6,7,8,9,11,12,13,14,18,19,20,26,27,28,29 } ) 
-			: GameComponent(game), planetNum(planetNumber), hasMoon(hasMoon){};
+		int planetNumber = 3, 
+		std::vector<int> hasMoon = { 1,2 } ) 
+			: GameComponent(game), planetNum(planetNumber), hasMoon(hasMoon) {};
 
 	std::vector<int> hasMoon;
 	int planetNum;

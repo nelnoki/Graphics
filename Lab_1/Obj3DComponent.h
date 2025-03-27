@@ -5,6 +5,7 @@
 #include <directxmath.h>
 #include <SimpleMath.h>
 #include "GameComponent.h"
+#include "CubeComponent.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -27,11 +28,20 @@ public:
         DXGI_FORMAT indexFormat = DXGI_FORMAT_R16_UINT,
         LPCWSTR shader = L"./Shaders/MyVeryFirstShader.hlsl");
 
-    Matrix worldMatrix = Matrix::Identity;
-    Matrix viewMatrix;
-    Matrix projMatrix;
+    void setWorldMatrix(Matrix m) { object->worldMatrix = m; };
+    void setViewMatrix(Matrix m) { object->viewMatrix = m; };
+    void setProjMatrix(Matrix m) { object->projMatrix = m; };
 
-    std::unique_ptr<GeometricPrimitive> object;
+    Matrix getWorldMatrix() { return object->worldMatrix; };
+    Matrix getViewMatrix() { return object->viewMatrix; };
+    Matrix getProjMatrix() { return object->projMatrix; };
+
+   /* Matrix worldMatrix = Matrix::Identity;
+    Matrix viewMatrix;
+    Matrix projMatrix;*/
+
+    //std::unique_ptr<GeometricPrimitive> object;
+    TriangleComponent* object;
     int typeObj;
     LPCWSTR shaderSource;
     LPCWSTR textureSource;

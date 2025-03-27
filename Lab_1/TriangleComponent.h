@@ -40,6 +40,9 @@ public:
 		LPCWSTR shader = L"./Shaders/MyVeryFirstShader.hlsl" );
 
 	DirectX::SimpleMath::Matrix worldMatrix;
+	DirectX::SimpleMath::Matrix viewMatrix;
+	DirectX::SimpleMath::Matrix projMatrix;
+
 	std::vector<DirectX::XMFLOAT4> points;
 
 private:

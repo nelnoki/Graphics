@@ -15,7 +15,9 @@ TriangleComponent::TriangleComponent(
 	strides(strides), 
 	offsets(offsets),
 	shaderSource(shader),
-	worldMatrix(DirectX::SimpleMath::Matrix::Identity) {}
+	worldMatrix(DirectX::SimpleMath::Matrix::Identity),
+	viewMatrix(DirectX::SimpleMath::Matrix::Identity), 
+	projMatrix(DirectX::SimpleMath::Matrix::Identity) {}
 
 void TriangleComponent::Initialize() {
 
@@ -48,7 +50,7 @@ void TriangleComponent::Initialize() {
 
 	D3D_SHADER_MACRO Shader_Macros[] = {
 								"TEST", "1",
-								"TCOLOR", "float4(0.0f, 0.0f, 1.0f, 1.0f)",
+								"TCOLOR", "float4(1.0f, 1.0f, 1.0f, 1.0f)",
 								nullptr, nullptr };
 
 	ID3DBlob* errorPixelCode;
@@ -141,7 +143,7 @@ void TriangleComponent::Initialize() {
 	res = game->Device->CreateRasterizerState(&rastDesc, &rastState);
 
 	D3D11_BUFFER_DESC constBufDesc = {};
-	constBufDesc.ByteWidth = sizeof(DirectX::SimpleMath::Matrix);
+	constBufDesc.ByteWidth = sizeof(DirectX::SimpleMath::Matrix) * 3; 
 	constBufDesc.Usage = D3D11_USAGE_DEFAULT;
 	constBufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	game->Device->CreateBuffer(&constBufDesc, nullptr, &constantBuffer);
@@ -161,7 +163,19 @@ void TriangleComponent::Draw() {
 	game->Context->VSSetShader(vertexShader, nullptr, 0);
 	game->Context->PSSetShader(pixelShader, nullptr, 0);
 
-	game->Context->UpdateSubresource(constantBuffer, 0, nullptr, &worldMatrix, 0, 0);
+	DirectX::SimpleMath::Matrix matrices[3] = {
+		worldMatrix,
+		viewMatrix,
+		projMatrix
+	};
+	game->Context->UpdateSubresource(
+		constantBuffer,
+		0,
+		nullptr,
+		matrices,
+		0,
+		0
+	);
 	game->Context->VSSetConstantBuffers(0, 1, &constantBuffer);
 
 	game->Context->DrawIndexed(indeces.size(), 0, 0);

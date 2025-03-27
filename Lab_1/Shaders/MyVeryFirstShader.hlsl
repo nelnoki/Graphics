@@ -1,6 +1,8 @@
 cbuffer ConstantBuffer : register(b0)
 {
     matrix World;
+    matrix View;
+    matrix Projection;
 };
 
 struct VS_IN
@@ -20,6 +22,9 @@ PS_IN VSMain( VS_IN input )
 	PS_IN output = (PS_IN)0;
 	
     output.pos = mul(input.pos, World);
+    output.pos = mul(output.pos, View);
+    output.pos = mul(output.pos, Projection);
+	
 	output.col = input.col;
 	
 	return output;

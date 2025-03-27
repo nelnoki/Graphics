@@ -4,7 +4,7 @@
 void PlanetSystem::Initialize() {
 
     viewMatrix = Matrix::CreateLookAt(
-        Vector3(0.0f, 900.0f, 0.0f),
+        Vector3(1000.0f, 1000.0f, -1000.0f),
         Vector3::Zero,            
         Vector3::UnitZ            
     );
@@ -13,19 +13,19 @@ void PlanetSystem::Initialize() {
         XM_PI / 4.f,
         float(game->Display->ClientWidth) / float(game->Display->ClientHeight),
         0.1f,
-        1000.f 
+        10000.f 
     );
 
-    for (int i = 0; i < planetNum; ++i) {
+    for (int i = 0; i < 1; ++i) {
         Planet* planet = new Planet(
             game, 
             i % 9 == 0? 2 : 1,
-            i == 0 ? 30.0f : i + 1.0f, 
+            i == 0 ? 1.0f : i + 1.0f, 
             textures[i > 13 ? i - 13 * (i / 13) + 1 : i ]);
 
         planet->Initialize();
-        planet->viewMatrix = viewMatrix;
-        planet->projMatrix = projMatrix;
+        planet->setViewMatrix(viewMatrix);
+        planet->setProjMatrix(projMatrix);
 
         planet->orbitAngle = i * XM_PI / 3.0f;
         planet->rotationSpeed = 0.8f - (i * 0.05f);
@@ -35,24 +35,24 @@ void PlanetSystem::Initialize() {
         planets.push_back(planet);
     } 
 
-    for (int i = 0; i < hasMoon.size(); ++i) {
-        Moon* moon = new Moon(
-            game, 
-            i % 2 == 0 ? 2 : 1,
-            planets[hasMoon[i]]->diameter / 3.0f,
-            textures[i > 4? i - 5 * (i / 5) + 9 : 9 + i], 
-            planets[hasMoon[i]]);
+    //for (int i = 0; i < hasMoon.size(); ++i) {
+    //    Moon* moon = new Moon(
+    //        game, 
+    //        i % 2 == 0 ? 2 : 1,
+    //        planets[hasMoon[i]]->diameter / 3.0f,
+    //        textures[i > 4? i - 5 * (i / 5) + 9 : 9 + i], 
+    //        planets[hasMoon[i]]);
 
-        moon->Initialize();
-        moon->viewMatrix = viewMatrix;
-        moon->projMatrix = projMatrix;
+    //    moon->Initialize();
+    //    moon->setViewMatrix(viewMatrix);
+    //    moon->setProjMatrix(projMatrix);
 
-        moon->orbitRadius = moon->parentPlanet->diameter / 2.0f * 2.0f ;
-        moon->rotationSpeed = 3.0f + i;        
-        moon->orbitSpeed = 10.0f - (i * 0.7f);
+    //    moon->orbitRadius = moon->parentPlanet->diameter / 2.0f * 2.0f ;
+    //    moon->rotationSpeed = 3.0f + i;        
+    //    moon->orbitSpeed = 10.0f - (i * 0.7f);
 
-        moons.push_back(moon);
-    }
+    //    moons.push_back(moon);
+    //}
 }
 
 void PlanetSystem::Draw() {
@@ -70,7 +70,7 @@ void PlanetSystem::Update() {
     planets[0]->rotationSpeed = 0.5f;
     planets[0]->rotationAngle += planets[0]->rotationSpeed * game->DeltaTime;
     planets[0]->rotationAngle = fmodf(planets[0]->rotationAngle, XM_2PI);
-    planets[0]->worldMatrix = Matrix::CreateRotationY(planets[0]->rotationAngle);
+    planets[0]->setWorldMatrix(Matrix::CreateRotationY(planets[0]->rotationAngle));
 
     for (size_t i = 1; i < planets.size(); ++i) {
         planets[i]->Update(i);
@@ -103,9 +103,9 @@ void PlanetSystem::Planet::Update(size_t i) {
     float x = orbitRadius * cos(orbitAngle);
     float z = orbitRadius * sin(orbitAngle);
 
-    worldMatrix =
+    setWorldMatrix(
         Matrix::CreateTranslation(x, 0.0f, z) *
-        Matrix::CreateRotationY(rotationAngle);
+        Matrix::CreateRotationY(rotationAngle));
 }
 
 void PlanetSystem::Moon::Update() {
@@ -119,8 +119,8 @@ void PlanetSystem::Moon::Update() {
     float x = orbitRadius * cos(orbitAngle);
     float z = orbitRadius * sin(orbitAngle);
 
-    worldMatrix =
+    setWorldMatrix(
         Matrix::CreateRotationY(rotationAngle) *
         Matrix::CreateTranslation(x, 0.0f, z) *
-        parentPlanet->worldMatrix;
+        parentPlanet->getWorldMatrix());
 }

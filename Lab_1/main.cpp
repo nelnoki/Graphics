@@ -7,8 +7,8 @@
 
 
 int main() {
-	int screenWidth = 1200;
-	int screenHeight = 1200;
+	int screenWidth = 1000;
+	int screenHeight = 1000;
 	LPCWSTR name = L"Graphics";
 
 	int ans;
@@ -40,7 +40,6 @@ int main() {
 		case 3:
 		{
 			component = new PlanetSystem(game);
-			break;
 			break;
 		}
 
