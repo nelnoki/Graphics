@@ -19,7 +19,7 @@ void PlanetSystem::Initialize() {
     for (int i = 0; i < planetNum; ++i) {
         Planet* planet = new Planet(
             game, 
-            i % 3 == 0? 2 : 1,
+            i % 9 == 0? 2 : 1,
             i == 0 ? 30.0f : i + 1.0f, 
             textures[i > 13 ? i - 13 * (i / 13) + 1 : i ]);
 

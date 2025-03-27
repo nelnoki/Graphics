@@ -2,8 +2,9 @@
 #include "TriangleComponent.h"
 #include "Cannon.h"
 #include "Pong.h"
-#include "Obj3DComponent.h"
 #include "PlanetSystem.h"
+#include "CubeComponent.h"
+
 
 int main() {
 	int screenWidth = 1200;
@@ -15,8 +16,8 @@ int main() {
 		"Press \n" <<
 		"1 - Cannon \n" <<
 		"2 - Pong \n" <<
-		"3 - Sphere \n" <<
-		"4 - Planet System \n";
+		"3 - Planet System \n" <<
+		"4 - Cube \n";
 
 	std::cin >> ans;
 
@@ -38,13 +39,14 @@ int main() {
 
 		case 3:
 		{
-			component = new Obj3DComponent(game);
+			component = new PlanetSystem(game);
+			break;
 			break;
 		}
 
 		case 4:
 		{
-			component = new PlanetSystem(game);
+			component = new CubeComponent(game, 0.5);
 			break;
 		}
 	}

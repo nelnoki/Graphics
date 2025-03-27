@@ -48,6 +48,9 @@
     <ClCompile Include="Obj3DComponent.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="CubeComponent.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -78,6 +81,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Obj3DComponent.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeComponent.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
