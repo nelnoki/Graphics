@@ -26,7 +26,9 @@
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MySuper3DApp.cpp" />
+    <ClCompile Include="PlanetSystem.cpp" />
     <ClCompile Include="Pong.cpp" />
+    <ClCompile Include="Obj3DComponent.cpp" />
     <ClCompile Include="TriangleComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -36,7 +38,9 @@
     <ClInclude Include="GameComponent.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
+    <ClInclude Include="PlanetSystem.h" />
     <ClInclude Include="Pong.h" />
+    <ClInclude Include="Obj3DComponent.h" />
     <ClInclude Include="TriangleComponent.h" />
   </ItemGroup>
   <ItemGroup>

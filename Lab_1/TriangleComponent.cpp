@@ -67,12 +67,14 @@ void TriangleComponent::Initialize() {
 	game->Device->CreateVertexShader(
 		vertexShaderByteCode->GetBufferPointer(),
 		vertexShaderByteCode->GetBufferSize(),
-		nullptr, &vertexShader);
+		nullptr, 
+		&vertexShader);
 
 	game->Device->CreatePixelShader(
 		pixelShaderByteCode->GetBufferPointer(),
 		pixelShaderByteCode->GetBufferSize(),
-		nullptr, &pixelShader);
+		nullptr, 
+		&pixelShader);
 
 	D3D11_INPUT_ELEMENT_DESC inputElements[] = {
 		D3D11_INPUT_ELEMENT_DESC {

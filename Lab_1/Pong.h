@@ -19,6 +19,7 @@ public:
 	static constexpr float SCREEN_BOTTOM = -1.0f;
 	static constexpr float MAX_BOUNCE_ANGLE = DirectX::XM_PIDIV2 * 0.75f; // ~67.5 
 	static constexpr float MIN_HORIZONTAL = 0.3f;
+	static constexpr float SPEED_INCREASE_FACTOR = 1.05f;
 
 	class Player : public TriangleComponent {
 	public:
@@ -82,6 +83,7 @@ public:
 			(rand() % 2 == 0) ? 1.0f : -1.0f,
 			(rand() % 100 / 100.0f) - 0.5f
 		);
+
 		float speed = 0.8f;
 		float radius = 0.03f;
 

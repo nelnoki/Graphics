@@ -17,7 +17,7 @@ public:
 	TriangleComponent* cannon;
 	float rotationSpeed = 0.02f;
 	float movingSpeed = 0.005f;
-	float rotationAngle = DirectX::XM_PIDIV2 / 2;
+	float rotationAngle = DirectX::XM_PIDIV2;
 
 	float shootInterval = 0.2f;
 	float lastShotTime = -1.0f;

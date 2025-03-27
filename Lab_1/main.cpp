@@ -2,39 +2,58 @@
 #include "TriangleComponent.h"
 #include "Cannon.h"
 #include "Pong.h"
+#include "Obj3DComponent.h"
+#include "PlanetSystem.h"
 
 int main() {
-	int screenWidth = 1000;
-	int screenHeight = 1000;
+	int screenWidth = 1200;
+	int screenHeight = 1200;
 	LPCWSTR name = L"Graphics";
 
-	Game* game = new Game(name, screenWidth, screenHeight);
-
-	Cannon* cannon = new Cannon(game);
-	Pong* pong = new Pong(game);
-
-	/*int ans;
+	int ans;
 	std::cout <<
 		"Press \n" <<
 		"1 - Cannon \n" <<
-		"2 - Pong \n";
+		"2 - Pong \n" <<
+		"3 - Sphere \n" <<
+		"4 - Planet System \n";
+
 	std::cin >> ans;
+
+	Game* game = new Game(name, screenWidth, screenHeight);
+	GameComponent* component;
+
 	switch (ans) {
 		case 1: 
 		{
-			game->Components.push_back(cannon);
+			component = new Cannon(game);
 			break;
 		}
 			
 		case 2:
 		{
-			game->Components.push_back(pong);
+			component = new Pong(game);
 			break;
 		}
-	}*/
+
+		case 3:
+		{
+			component = new Obj3DComponent(game);
+			break;
+		}
+
+		case 4:
+		{
+			component = new PlanetSystem(game);
+			break;
+		}
+	}
 
 	//game->Components.push_back(cannon);
-	game->Components.push_back(pong);
+	//game->Components.push_back(pong);
+	//component = new PlanetSystem(game);
+
+	game->Components.push_back(component);
 
 	game->Run();
-}
+} 

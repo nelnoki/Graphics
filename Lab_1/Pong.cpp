@@ -1,6 +1,5 @@
 #include "Pong.h"
 #include "Game.h"
-#include <algorithm>
 
 void Pong::Initialize() {
 	player1 = new Player(game);
@@ -77,7 +76,7 @@ void Pong::HandlePaddleCollision(Player* player) {
 		sin(angle)
 	);
 
-	ball->speed *= 1.1f;
+	ball->speed *= SPEED_INCREASE_FACTOR;
 }
 
 void Pong::ResetBall() {
