@@ -40,6 +40,7 @@ public:
 		};
 
 		float speed = 0.007f;
+		float rotationSpeed = 0.02f;
 		int score = 0;
 
 		DirectX::SimpleMath::Vector3 scale = Vector3(
@@ -53,8 +54,10 @@ public:
 			0.0f,
 			0.0f
 		);
+		float rotationAngle = 0.0f;
 
-		void Move(Keys up, Keys down);
+		void Move(Keys up, Keys down, Keys left, Keys right, Keys rotateclock, Keys rotateanticlock);
+
 
 		DirectX::BoundingBox GetBoundingBox() const {
 			Vector3 extents(scale.x, scale.y, 0.1f);

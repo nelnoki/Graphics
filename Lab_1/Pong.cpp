@@ -30,8 +30,8 @@ void Pong::Draw() {
 
 void Pong::Update() {
 	
-	player1->Move(Keys::W, Keys::S);
-	player2->Move(Keys::Up, Keys::Down);
+	player1->Move(Keys::W, Keys::S, Keys::A, Keys::D, Keys::E, Keys::Q);
+	player2->Move(Keys::I, Keys::K, Keys::J, Keys::L, Keys::U, Keys::O);
 	ball->Move();
 
 	auto ballSphere = ball->GetBoundingSphere();
@@ -63,21 +63,47 @@ void Pong::Update() {
 	}
 }
 
-void Pong::HandlePaddleCollision(Player* player) {
+//void Pong::HandlePaddleCollision(Player* player) {
+//
+//	float hitPosition = (ball->pos.y - player->pos.y) / player->scale.y;
+//
+//	float angle = hitPosition * MAX_BOUNCE_ANGLE;
+//
+//	float directionX = (player == player1) ? 1.0f : -1.0f;
+//
+//	ball->direction = Vector2(
+//		directionX * cos(angle),
+//		sin(angle)
+//	);
+//
+//	ball->speed *= SPEED_INCREASE_FACTOR;
+//}
 
-	float hitPosition = (ball->pos.y - player->pos.y) / player->scale.y;
+void Pong::HandlePaddleCollision(Player* player) {
+	Vector2 relativeHit = Vector2(ball->pos.x - player->pos.x, ball->pos.y - player->pos.y);
+
+	Matrix inverseRot = Matrix::CreateRotationZ(-player->rotationAngle);
+	Vector3 localHit3 = Vector3::Transform(Vector3(relativeHit.x, relativeHit.y, 0.0f), inverseRot);
+	Vector2 localHit(localHit3.x, localHit3.y);
+
+	float hitPosition = localHit.y / player->scale.y;
+	if (hitPosition > 1.0f) hitPosition = 1.0f;
+	else if (hitPosition < -1.0f) hitPosition = -1.0f;
 
 	float angle = hitPosition * MAX_BOUNCE_ANGLE;
 
-	float directionX = (player == player1) ? 1.0f : -1.0f;
+	float directionSign = (player == player1) ? 1.0f : -1.0f;
+	Vector2 newDir = Vector2(directionSign * cos(angle), sin(angle));
 
-	ball->direction = Vector2(
-		directionX * cos(angle),
-		sin(angle)
-	);
+	Matrix rot = Matrix::CreateRotationZ(player->rotationAngle);
+	Vector3 finalDir3 = Vector3::Transform(Vector3(newDir.x, newDir.y, 0.0f), rot);
+	Vector2 finalDir(finalDir3.x, finalDir3.y);
+	finalDir.Normalize();
 
+	ball->direction = finalDir;
 	ball->speed *= SPEED_INCREASE_FACTOR;
 }
+
 
 void Pong::ResetBall() {
 	ball->pos = Vector3::Zero;
@@ -97,11 +123,18 @@ void Pong::DestroyResources() {
 	ball->DestroyResources();
 }
 
-void Pong::Player::Move(Keys up, Keys down) {
+void Pong::Player::Move(Keys up, Keys down, Keys left, Keys right, Keys rotateclock, Keys rotateanticlock) {
 	if (game->InDevice->IsKeyDown(up)) pos.y += speed;
 	
 	if (game->InDevice->IsKeyDown(down)) pos.y -= speed;
 
+	if (game->InDevice->IsKeyDown(right)) pos.x += speed;
+
+	if (game->InDevice->IsKeyDown(left)) pos.x -= speed;
+
+	if (game->InDevice->IsKeyDown(rotateclock)) rotationAngle += rotationSpeed;
+
+	if (game->InDevice->IsKeyDown(rotateanticlock)) rotationAngle -= rotationSpeed;
 	
 	if (pos.y + scale.y > SCREEN_TOP) {
 		pos.y = SCREEN_TOP - scale.y;
@@ -111,7 +144,7 @@ void Pong::Player::Move(Keys up, Keys down) {
 	}
 
 	worldMatrix = DirectX::SimpleMath::Matrix::CreateScale(scale) *
-		DirectX::SimpleMath::Matrix::CreateRotationZ(0.0f) *
+		DirectX::SimpleMath::Matrix::CreateRotationZ(rotationAngle) *
 		DirectX::SimpleMath::Matrix::CreateTranslation(pos);
 
 	worldMatrix = worldMatrix.DirectX::SimpleMath::Matrix::Transpose();
