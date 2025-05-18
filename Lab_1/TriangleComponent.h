@@ -45,8 +45,6 @@ public:
 
 	std::vector<DirectX::XMFLOAT4> points;
 
-private:
-
 	LPCWSTR shaderSource;
 	ID3D11InputLayout* layout;
 	ID3D11PixelShader* pixelShader;

@@ -1,6 +1,7 @@
 #pragma once
 #include "GameComponent.h"
-#include "Obj3DComponent.h"
+#include "CubeComponent.h"
+#include "SphereComponent.h"
 
 class PlanetSystem : public GameComponent {
 public:
@@ -12,9 +13,9 @@ public:
 
 	PlanetSystem(
 		Game* game, 
-		int planetNumber = 3, 
+		int planetNum = 3, 
 		std::vector<int> hasMoon = { 1,2 } ) 
-			: GameComponent(game), planetNum(planetNumber), hasMoon(hasMoon) {};
+			: GameComponent(game), planetNum(planetNum), hasMoon(hasMoon) {};
 
 	std::vector<int> hasMoon;
 	int planetNum;
@@ -37,15 +38,15 @@ public:
 	Matrix viewMatrix;
 	Matrix projMatrix;
 
-	class Planet : public Obj3DComponent {
+	class Planet {
 	public:
 		void Update(size_t i);
 
-		Planet(Game* game,
-			int type,
-			float diameter,
-			LPCWSTR texture)
-			: Obj3DComponent(game, type, diameter, texture) {}
+		Planet(Game* game) : game(game) {};
+
+		Game* game;
+
+		TriangleComponent* mesh;
 
 		float rotationAngle = 0.0f;
 		float rotationSpeed = 0.0f;
@@ -53,21 +54,17 @@ public:
 		float orbitAngle = 0.0f;
 		float orbitSpeed = 0.0f;
 		float orbitRadius = 0.0f;
+
+		float diameter;
 	};
 
 	std::vector<Planet*> planets;
 
 	class Moon : public Planet {
 	public:
-		void Update() override;
+		void Update();
 
-		Moon(
-			Game* game,
-			int type,
-			float diameter,
-			LPCWSTR texture,
-			Planet* parentPlanet)
-			: Planet(game,type, diameter, texture), parentPlanet(parentPlanet) {};
+		Moon(Game* game) : Planet(game) {};
 
 		Planet* parentPlanet;
 	};

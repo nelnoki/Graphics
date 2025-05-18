@@ -1,4 +1,4 @@
-﻿#include "Obj3DComponent.h"
+﻿ #include "Obj3DComponent.h"
 #include "Game.h"
 #include <WICTextureLoader.h>
 
