@@ -13,8 +13,8 @@ public:
 
 	PlanetSystem(
 		Game* game, 
-		int planetNum = 3, 
-		std::vector<int> hasMoon = { 1,2 } ) 
+		int planetNum = 10, 
+		std::vector<int> hasMoon = { 1,2,3 } ) 
 			: GameComponent(game), planetNum(planetNum), hasMoon(hasMoon) {};
 
 	std::vector<int> hasMoon;
@@ -40,7 +40,7 @@ public:
 
 	class Planet {
 	public:
-		void Update(size_t i);
+		void Update();
 
 		Planet(Game* game) : game(game) {};
 
@@ -70,5 +70,21 @@ public:
 	};
 
 	std::vector<Moon*> moons;
+
+	// Параметры орбитальной камеры
+	Vector3 cameraLookAt = Vector3::Zero;  // Точка, вокруг которой вращается камера
+	float cameraDistance = 10.0f;         // Расстояние до центра
+	float cameraYaw = DirectX::XM_PI;               // Горизонтальный угол (вращение вокруг Y)
+	float cameraPitch = -0.3f;             // Вертикальный угол (наклон вверх/вниз)
+	float cameraRoll = 0.0f;              // Наклон камеры (обычно 0)
+	float cameraSensitivity = 0.005f;
+	float zoomSpeed = 1.0f;
+
+	Vector2 prevMousePos = Vector2::Zero;
+
+	// Методы для управления камерой
+	void HandleCameraInput();
+	void RotateCamera(float deltaYaw, float deltaPitch);
+	void ZoomCamera(float deltaDistance);
 };
 

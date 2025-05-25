@@ -11,7 +11,7 @@ int main() {
 	int screenHeight = 1000;
 	LPCWSTR name = L"Graphics";
 
-	int ans;
+	/*int ans;
 	std::cout <<
 		"Press \n" <<
 		"1 - Cannon \n" <<
@@ -19,12 +19,12 @@ int main() {
 		"3 - Planet System \n" <<
 		"4 - Cube \n";
 
-	std::cin >> ans;
+	std::cin >> ans;*/
 
 	Game* game = new Game(name, screenWidth, screenHeight);
 	GameComponent* component;
 
-	switch (ans) {
+	/*switch (ans) {
 		case 1: 
 		{
 			component = new Cannon(game);
@@ -48,11 +48,11 @@ int main() {
 			component = new CubeComponent(game, 0.5);
 			break;
 		}
-	}
+	}*/
 
-	//game->Components.push_back(cannon);
+	//component = new Cannon(game);
 	//game->Components.push_back(pong);
-	//component = new PlanetSystem(game);
+	component = new PlanetSystem(game);
 
 	game->Components.push_back(component);
 

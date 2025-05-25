@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cannon.cpp" />
     <ClCompile Include="CubeComponent.cpp" />
     <ClCompile Include="DisplayWin32.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="TriangleComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Cannon.h" />
     <ClInclude Include="CubeComponent.h" />
     <ClInclude Include="DisplayWin32.h" />

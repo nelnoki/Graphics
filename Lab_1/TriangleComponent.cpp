@@ -163,10 +163,15 @@ void TriangleComponent::Draw() {
 	game->Context->VSSetShader(vertexShader, nullptr, 0);
 	game->Context->PSSetShader(pixelShader, nullptr, 0);
 
-	DirectX::SimpleMath::Matrix matrices[3] = {
+	/*DirectX::SimpleMath::Matrix matrices[3] = {
 		worldMatrix,
 		viewMatrix,
 		projMatrix
+	};*/
+	DirectX::SimpleMath::Matrix matrices[3] = {
+		worldMatrix.Transpose(),
+		viewMatrix.Transpose(),
+		projMatrix.Transpose()
 	};
 	game->Context->UpdateSubresource(
 		constantBuffer,
