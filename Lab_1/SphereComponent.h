@@ -7,6 +7,7 @@ public:
 		Game* game,
 		float radius,
 		int segments,
+
 		std::vector<UINT> strides = { 32 },
 		std::vector<UINT> offsets = { 0 },
 		LPCWSTR shader = L"./Shaders/MyVeryFirstShader.hlsl");

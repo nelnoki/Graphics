@@ -11,6 +11,7 @@
 #include "GameComponent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
+#include "CameraComponent.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -52,6 +53,8 @@ public:
 	std::vector<GameComponent*> Components; 
 	DisplayWin32* Display;
 	InputDevice* InDevice;
+
+	CameraComponent* activeCamera;
 	
 	void Exit();
 	void MessageHandler(MSG& msg, bool& isExitRequested);

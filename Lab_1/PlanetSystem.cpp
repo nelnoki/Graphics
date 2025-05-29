@@ -3,42 +3,39 @@
 
 void PlanetSystem::Initialize() {
 
-    viewMatrix = Matrix::CreateLookAt(
-        Vector3(0.0f,10.0f, -500.0f),
-        Vector3::Zero,            
-        Vector3::UnitY            
-    );
-
-    projMatrix = Matrix::CreatePerspectiveFieldOfView(
-        30.0f,
-        float(game->Display->ClientWidth) / float(game->Display->ClientHeight),
-        0.01f,
-        100.0f 
-    );
+    Vector3 camOrbit = Vector3(-2.0f, 5.0f, -2.0f);
 
     for (int i = 0; i < planetNum; ++i) {
 
         Planet* planet = new Planet(game);
 
-        planet->diameter = /*i == 0 ? 1.0f :*/ i + 0.1f;
+        planet->diameter = i + 0.1f;
 
-        if (i % 5 == 0) {
+        if (i % 3 == 0) {
             planet->mesh = new CubeComponent(game, planet->diameter);
         }
         else {
-            planet->mesh = new SphereComponent(game, planet->diameter / 2, 50);
+            planet->mesh = new SphereComponent(game, planet->diameter / 3, 50);
         }
 
+        if (i % 4 == 0)
+            hasMoon.push_back(i);
+
         planet->mesh->Initialize();
-        planet->mesh->viewMatrix = viewMatrix;
-        planet->mesh->projMatrix = projMatrix;
 
         planet->orbitAngle = i * DirectX::XM_PI / 3.0f;
-        planet->rotationSpeed = 0.08f - (i * 0.05f);
-        planet->orbitSpeed = 6.0f / (i + 1);
-        planet->orbitRadius = 20.0f + i * 5.0f;
+        planet->rotationSpeed = 0.08f + (i * 0.005f);
+        planet->orbitSpeed = 6.0f / (i + 15.0f);
+        planet->orbitRadius = 30.0f + i * 5.0f;
+        planet->pos.x = planet->orbitRadius * cos(planet->orbitAngle);
+        planet->pos.z = planet->orbitRadius * sin(planet->orbitAngle);
 
         planets.push_back(planet);
+
+        OrbitalCamera* cam = new OrbitalCamera(game);
+        cam->Initialize(camOrbit, planet->pos - camOrbit, planet->pos);
+        OrbitalCameraObject* camObject = new OrbitalCameraObject{ cam, planet };
+        cameras.push_back(camObject);
     } 
 
     for (int i = 0; i < hasMoon.size(); ++i) {
@@ -55,15 +52,20 @@ void PlanetSystem::Initialize() {
         }
 
         moon->mesh->Initialize();
-        moon->mesh->viewMatrix = viewMatrix;
-        moon->mesh->projMatrix = projMatrix;
 
         moon->orbitRadius = moon->parentPlanet->diameter  * 2.0f ;
         moon->rotationSpeed = 3.0f + i;        
-        moon->orbitSpeed = 10.0f - (i * 0.7f);
+        moon->orbitSpeed = 10.0f / (i + 5.0f);
 
         moons.push_back(moon);
     }
+
+    mainFPS = new FPSCamera(game);
+    mainFPS->Initialize();
+    mainFPS->SetLookPoint(Vector3(3.0f, -3.0f, 3.0f));
+    mainFPS->SetTarget(Vector3(0.0f, 0.0f, 0.0f));
+
+    activeCam = mainFPS;
 }
 
 void PlanetSystem::Draw() {
@@ -77,44 +79,43 @@ void PlanetSystem::Draw() {
 }
 
 void PlanetSystem::Update() {
-    HandleCameraInput();
 
-    // 1. Обновляем позицию камеры
-    Vector3 camPos = Vector3(0, 0, -cameraDistance); // Начальная позиция (по оси Z)
-    Matrix rotMat = Matrix::CreateFromYawPitchRoll(cameraYaw, cameraPitch, cameraRoll);
-    camPos = Vector3::Transform(camPos, rotMat);
-        
-    cameraLookAt = cameraLookAt + Vector3(0, 0.1f, 0);
+    /*for (OrbitalCameraObject* cam : cameras) {
+        cam->camera->SetTarget(cam->cameraOwner->pos);
+        cam->camera->SetLookPoint(
+            cam->cameraOwner->pos + 
+            Vector3::Transform(
+                cam->camera->orbit, 
+                Matrix::CreateRotationY(cam->cameraOwner->orbitAngle)));
+    }*/
 
-    viewMatrix = Matrix::CreateLookAt(camPos, cameraLookAt, Vector3::Up);
+    for (auto planet : planets) planet->Update();
+    for (auto moon : moons) moon->Update();
 
-    // 2. Обновляем viewMatrix
-    //viewMatrix = Matrix::CreateLookAt(camPos, cameraLookAt, Vector3::Up);
+    for (OrbitalCameraObject* cam : cameras) {
+        cam->camera->SetTarget(cam->cameraOwner->pos);
+    }
 
-  /*  planets[0]->rotationSpeed = 0.5f;
-    planets[0]->rotationAngle += planets[0]->rotationSpeed * game->DeltaTime;
-    planets[0]->rotationAngle = fmodf(planets[0]->rotationAngle, DirectX::XM_2PI);
-    planets[0]->mesh->worldMatrix = Matrix::CreateRotationY(planets[0]->rotationAngle);*/
+    activeCam->HandleInput(game->DeltaTime);
+    activeCam->Update();
 
     for (auto planet : planets) {
-        planet->mesh->viewMatrix = viewMatrix;
-        planet->mesh->projMatrix = projMatrix;
-        planet->Update();   
+        planet->mesh->viewMatrix = activeCam->viewMatrix;
+        planet->mesh->projMatrix = activeCam->projMatrix;
     }
 
     for (auto moon : moons) {
-        moon->mesh->viewMatrix = viewMatrix;
-        moon->mesh->projMatrix = projMatrix;
-        moon->Update();
+        moon->mesh->viewMatrix = activeCam->viewMatrix;
+        moon->mesh->projMatrix = activeCam->projMatrix;
     }
 
-    std::cout << "" << ":\n";
-    for (int row = 0; row < 4; ++row) {
-        for (int col = 0; col < 4; ++col) {
-            std::cout << viewMatrix(row, col) << "\t";
+    for (int i = 0; i <= cameras.size(); i++) {
+        Keys key = static_cast<Keys>(static_cast<int>(Keys::D0) + i);
+        if (game->InDevice->IsKeyDown(key)) {
+            ChangeCamera(i - 1);
         }
-        std::cout << "\n";
     }
+    
 }
 
 void PlanetSystem::Reload() {}
@@ -136,11 +137,11 @@ void PlanetSystem::Planet::Update() {
     rotationAngle = fmodf(rotationAngle, DirectX::XM_2PI);
     orbitAngle = fmodf(orbitAngle, DirectX::XM_2PI);
 
-    float x = orbitRadius * cos(orbitAngle);
-    float z = orbitRadius * sin(orbitAngle);
+    pos.x = orbitRadius * cos(orbitAngle);
+    pos.z = orbitRadius * sin(orbitAngle);
 
     mesh->worldMatrix = 
-        Matrix::CreateTranslation(x, 0.0f, z) *
+        Matrix::CreateTranslation(pos) *
         Matrix::CreateRotationY(rotationAngle);
 }
 
@@ -152,56 +153,19 @@ void PlanetSystem::Moon::Update() {
     orbitAngle += orbitSpeed * game->DeltaTime;
     orbitAngle = fmodf(orbitAngle, DirectX::XM_2PI);
 
-    float x = orbitRadius * cos(orbitAngle);
-    float z = orbitRadius * sin(orbitAngle);
+    pos.x = orbitRadius * cos(orbitAngle);
+    pos.z = orbitRadius * sin(orbitAngle);
 
     mesh->worldMatrix = 
         Matrix::CreateRotationY(rotationAngle) *
-        Matrix::CreateTranslation(x, 0.0f, z) *
+        Matrix::CreateTranslation(pos) *
         parentPlanet->mesh->worldMatrix;
 }
 
-void PlanetSystem::RotateCamera(float deltaX, float deltaY) {
-    cameraYaw += deltaX * cameraSensitivity;
-    cameraPitch -= deltaY * cameraSensitivity; // Инвертируем вертикальное движение
-
-    // Ограничиваем угол pitch
-    const float maxPitch = DirectX::XM_PIDIV2 - 0.1f;
-    const float minPitch = -DirectX::XM_PIDIV2 + 0.1f;
-
-    if (cameraPitch > maxPitch) cameraPitch = maxPitch;
-    if (cameraPitch < minPitch) cameraPitch = minPitch;
+void PlanetSystem::ChangeCamera(int cameraID)
+{
+    if (cameraID == -1) 
+        activeCam = mainFPS;
+    else 
+        activeCam = cameras[cameraID]->camera;
 }
-
-void PlanetSystem::ZoomCamera(float delta) {
-    cameraDistance -= delta * zoomSpeed;
-
-    // Ограничиваем дистанцию
-    const float minDistance = 5.0f;
-    const float maxDistance = 500.0f;
-
-    if (cameraDistance < minDistance) cameraDistance = minDistance;
-    if (cameraDistance > maxDistance) cameraDistance = maxDistance;
-}
-
-void PlanetSystem::HandleCameraInput() {
-    // Получаем текущее положение мыши
-    Vector2 currentMousePos = game->InDevice->MousePosition;
-    int wheelDelta = game->InDevice->MouseWheelDelta;
-
-    // Вращение при зажатой правой кнопке мыши
-    if (game->InDevice->IsKeyDown(Keys::RightButton)) {
-        Vector2 mouseDelta = currentMousePos - prevMousePos;
-        RotateCamera(mouseDelta.x, mouseDelta.y);
-        std::cout << "rightbutton is working \n";
-    }
-
-    // Зум колесом мыши
-    if (wheelDelta != 0) {
-        ZoomCamera(wheelDelta / 120.0f);
-        std::cout << "wheel is working \n"; 
-    }
-
-    prevMousePos = currentMousePos;
-}
-

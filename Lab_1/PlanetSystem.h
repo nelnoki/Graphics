@@ -2,6 +2,8 @@
 #include "GameComponent.h"
 #include "CubeComponent.h"
 #include "SphereComponent.h"
+#include "OrbitalCamera.h"
+#include "FPSCamera.h"
 
 class PlanetSystem : public GameComponent {
 public:
@@ -13,8 +15,8 @@ public:
 
 	PlanetSystem(
 		Game* game, 
-		int planetNum = 10, 
-		std::vector<int> hasMoon = { 1,2,3 } ) 
+		int planetNum = 9, 
+		std::vector<int> hasMoon = { } ) 
 			: GameComponent(game), planetNum(planetNum), hasMoon(hasMoon) {};
 
 	std::vector<int> hasMoon;
@@ -48,6 +50,8 @@ public:
 
 		TriangleComponent* mesh;
 
+		Vector3 pos = {0.0f, 0.0f, 0.0f};
+
 		float rotationAngle = 0.0f;
 		float rotationSpeed = 0.0f;
 
@@ -71,20 +75,15 @@ public:
 
 	std::vector<Moon*> moons;
 
-	// Параметры орбитальной камеры
-	Vector3 cameraLookAt = Vector3::Zero;  // Точка, вокруг которой вращается камера
-	float cameraDistance = 10.0f;         // Расстояние до центра
-	float cameraYaw = DirectX::XM_PI;               // Горизонтальный угол (вращение вокруг Y)
-	float cameraPitch = -0.3f;             // Вертикальный угол (наклон вверх/вниз)
-	float cameraRoll = 0.0f;              // Наклон камеры (обычно 0)
-	float cameraSensitivity = 0.005f;
-	float zoomSpeed = 1.0f;
+	struct OrbitalCameraObject {
+		OrbitalCamera* camera;
+		Planet* cameraOwner;
+	};
 
-	Vector2 prevMousePos = Vector2::Zero;
+	std::vector<OrbitalCameraObject*> cameras;
+	FPSCamera* mainFPS;
+	CameraComponent* activeCam;
 
-	// Методы для управления камерой
-	void HandleCameraInput();
-	void RotateCamera(float deltaYaw, float deltaPitch);
-	void ZoomCamera(float deltaDistance);
+	void ChangeCamera(int cameraID);
 };
 
