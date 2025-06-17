@@ -4,6 +4,10 @@ Game::Game(LPCWSTR name, int screenWidth, int screenHeight) {
 	Instance = GetModuleHandle(nullptr);
 	Display = new DisplayWin32(this, name, screenWidth, screenHeight, Instance);
 	InDevice = new InputDevice(this);
+
+	Camera = new ::Camera();
+	Camera->AspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+
 }
 
 void Game::PrepareResources() {

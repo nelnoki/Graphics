@@ -5,6 +5,7 @@ SphereComponent::SphereComponent(
     Game* game,
     float radius,
     int segments,
+    bool color,
     std::vector<UINT> strides,
     std::vector<UINT> offsets,
     LPCWSTR shader) : TriangleComponent(game) {
@@ -12,7 +13,7 @@ SphereComponent::SphereComponent(
     std::vector<DirectX::XMFLOAT4> points;
     std::vector<int> indeces;
 
-    GenerateSpherePoints(points, indeces, radius, segments);
+    GenerateSpherePoints(points, indeces, radius, segments, color);
 
     // Инициализируем базовый класс с полученными вершинами и индексами
     this->points = points;
@@ -23,7 +24,7 @@ SphereComponent::SphereComponent(
 }
 
 void SphereComponent::GenerateSpherePoints(std::vector<DirectX::XMFLOAT4>& points, std::vector<int>& indeces, float radius,
-    int segments) {
+    int segments, bool color) {
 
     points.clear();
     indeces.clear();
@@ -41,7 +42,11 @@ void SphereComponent::GenerateSpherePoints(std::vector<DirectX::XMFLOAT4>& point
             float z = radius * sinf(theta) * sinf(phi);
 
             points.push_back(DirectX::XMFLOAT4(x, y, z, 1.0f));
-            points.push_back(DirectX::XMFLOAT4(u, v, 0.5f, 1.0f)); 
+
+            if (color)
+                points.push_back(DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+            else
+                points.push_back(DirectX::XMFLOAT4(u, v, 0.5f, 1.0f)); 
         }
     }
 

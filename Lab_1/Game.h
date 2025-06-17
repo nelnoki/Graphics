@@ -11,7 +11,7 @@
 #include "GameComponent.h"
 #include "DisplayWin32.h"
 #include "InputDevice.h"
-#include "CameraComponent.h"
+#include "Camera.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -54,7 +54,7 @@ public:
 	DisplayWin32* Display;
 	InputDevice* InDevice;
 
-	CameraComponent* activeCamera;
+	Camera* Camera;
 	
 	void Exit();
 	void MessageHandler(MSG& msg, bool& isExitRequested);

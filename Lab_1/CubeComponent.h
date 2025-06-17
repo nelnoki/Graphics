@@ -8,15 +8,15 @@ public:
 		float size,
 		std::vector<DirectX::XMFLOAT4> points = {
 
-		DirectX::XMFLOAT4(-1.0f, -1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f, .0f, .0f, 1.0f),
-		DirectX::XMFLOAT4(1.0f, -1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(.0f, 1.0f, .0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f, -1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(0.0f, .0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(1.0f, -1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(.0f, .0f, 1.0f, 1.0f),
 		DirectX::XMFLOAT4(1.0f,  1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(.0f, .0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(-1.0f,  1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f,  1.0f, 1.0f, 1.0f), DirectX::XMFLOAT4(.0f, .0f, 1.0f, 1.0f),
 
-		DirectX::XMFLOAT4(-1.0f, -1.0f, -1.0f, 1.0f), DirectX::XMFLOAT4(.0f, 1.0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(1.0f, -1.0f, -1.0f, 1.0), DirectX::XMFLOAT4(1.0f, .0f, 1.0f, 1.0f),
-		DirectX::XMFLOAT4(1.0f,  1.0f, -1.0f, 1.0), DirectX::XMFLOAT4(1.0f, 1.0f, .0f, 1.0f),
-		DirectX::XMFLOAT4(-1.0f,  1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT4(1.0f, 1.0f, .0f, 1.0f)
+		DirectX::XMFLOAT4(-1.0f, -1.0f, -1.0f, 1.0f), DirectX::XMFLOAT4(.0f, 1.0f, .0f, 1.0f),
+		DirectX::XMFLOAT4(1.0f, -1.0f, -1.0f, 1.0), DirectX::XMFLOAT4(.0f, 1.0f, .0f, 1.0f),
+		DirectX::XMFLOAT4(1.0f,  1.0f, -1.0f, 1.0), DirectX::XMFLOAT4(.0f, 1.0f, .0f, 1.0f),
+		DirectX::XMFLOAT4(-1.0f,  1.0f, -1.0f, 1.0f),  DirectX::XMFLOAT4(.0f, 1.0f, .0f, 1.0f)
 
 		},
 
@@ -38,7 +38,24 @@ public:
 		std::vector<UINT> strides = { 32 },
 		std::vector<UINT> offsets = { 0 },
 		LPCWSTR shader = L"./Shaders/MyVeryFirstShader.hlsl")
-		: TriangleComponent(game, points, indeces, strides, offsets, shader) {
-	};
+		: TriangleComponent(game, points, indeces, strides, offsets, shader) 
+		{
+			float half = size / 2.0f;
+
+			std::vector<DirectX::XMFLOAT4> scaledPoints = {
+				
+				{ -half, -half,  half, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },
+				{  half, -half,  half, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },
+				{  half,  half,  half, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },
+				{ -half,  half,  half, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f },
+
+				{ -half, -half, -half, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },
+				{  half, -half, -half, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },
+				{  half,  half, -half, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },
+				{ -half,  half, -half, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f },
+			};
+
+			this->points = scaledPoints;
+		};
 };
 

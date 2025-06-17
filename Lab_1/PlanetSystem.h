@@ -2,8 +2,8 @@
 #include "GameComponent.h"
 #include "CubeComponent.h"
 #include "SphereComponent.h"
-#include "OrbitalCamera.h"
-#include "FPSCamera.h"
+#include "CameraController.h"
+#include "Planet.h"
 
 class PlanetSystem : public GameComponent {
 public:
@@ -14,10 +14,10 @@ public:
 	void Reload() override;
 
 	PlanetSystem(
-		Game* game, 
-		int planetNum = 9, 
-		std::vector<int> hasMoon = { } ) 
-			: GameComponent(game), planetNum(planetNum), hasMoon(hasMoon) {};
+		Game* game,
+		int planetNum = 9,
+		std::vector<int> hasMoon = { })
+		: GameComponent(game), planetNum(planetNum), hasMoon(hasMoon) {};
 
 	std::vector<int> hasMoon;
 	int planetNum;
@@ -40,50 +40,9 @@ public:
 	Matrix viewMatrix;
 	Matrix projMatrix;
 
-	class Planet {
-	public:
-		void Update();
-
-		Planet(Game* game) : game(game) {};
-
-		Game* game;
-
-		TriangleComponent* mesh;
-
-		Vector3 pos = {0.0f, 0.0f, 0.0f};
-
-		float rotationAngle = 0.0f;
-		float rotationSpeed = 0.0f;
-
-		float orbitAngle = 0.0f;
-		float orbitSpeed = 0.0f;
-		float orbitRadius = 0.0f;
-
-		float diameter;
-	};
+	CameraController* controller;
 
 	std::vector<Planet*> planets;
-
-	class Moon : public Planet {
-	public:
-		void Update();
-
-		Moon(Game* game) : Planet(game) {};
-
-		Planet* parentPlanet;
-	};
-
 	std::vector<Moon*> moons;
-
-	struct OrbitalCameraObject {
-		OrbitalCamera* camera;
-		Planet* cameraOwner;
-	};
-
-	std::vector<OrbitalCameraObject*> cameras;
-	FPSCamera* mainFPS;
-	CameraComponent* activeCam;
-
-	void ChangeCamera(int cameraID);
 };
 
