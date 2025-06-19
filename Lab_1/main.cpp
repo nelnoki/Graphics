@@ -16,8 +16,7 @@ int main() {
 		"Press \n" <<
 		"1 - Cannon \n" <<
 		"2 - Pong \n" <<
-		"3 - Planet System \n" <<
-		"4 - Cube \n";
+		"3 - Planet System \n";
 
 	std::cin >> ans;*/
 
@@ -40,12 +39,6 @@ int main() {
 		case 3:
 		{
 			component = new PlanetSystem(game);
-			break;
-		}
-
-		case 4:
-		{
-			component = new CubeComponent(game, 0.5);
 			break;
 		}
 	}*/

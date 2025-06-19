@@ -1,11 +1,16 @@
 #pragma once
 
+#include <windows.h>
+#include <WinUser.h>
 #include <wrl.h>
+#include <iostream>
 #include <d3d.h>
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <directxmath.h>
 #include <chrono>
+#include <vector>
+#include <cmath>
 
 #include <vector>
 #include "GameComponent.h"
@@ -23,6 +28,9 @@ class Game {
 
 private:
 	void createBackBuffer();
+	void CreateDepthBuffer();
+	void InitTimer();
+	void UpdateTimer();
 
 protected:
 	virtual void DestroyResources();
@@ -48,11 +56,18 @@ public:
 	std::chrono::time_point<std::chrono::steady_clock> PrevTime;
 	float StartTime;
 	float TotalTime;
+	float TotalestTime = 0.0f;
 	float DeltaTime;
 	unsigned int FrameCount;
 	std::vector<GameComponent*> Components; 
 	DisplayWin32* Display;
 	InputDevice* InDevice;
+
+	ID3D11Texture2D* DepthStencilBuffer;
+	ID3D11DepthStencilView* DepthStencilView;
+
+	ID3D11RasterizerState* RastState;
+	ID3D11SamplerState* SamplerState;
 
 	Camera* Camera;
 	

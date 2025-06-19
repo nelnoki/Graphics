@@ -20,13 +20,19 @@ void Planet::Update() {
         Matrix::CreateFromAxisAngle(
             Vector3::Up,
             game->DeltaTime * orbitSpeed));
+    mesh->SetPosition(pos);
+    mesh->SetPosition(pos);
+
     rotation *= Quaternion::CreateFromAxisAngle(
         Vector3::Up,
         rotationSpeed * game->DeltaTime);
+    mesh->SetRotation(rotation);
 
-    mesh->worldMatrix =
+    /*mesh->worldMatrix =
         Matrix::CreateFromQuaternion(rotation) *
-        Matrix::CreateTranslation(pos);
+        Matrix::CreateTranslation(pos);*/
+
+    mesh->Update();
 }
 
 void Moon::Update() {
@@ -51,10 +57,19 @@ void Moon::Update() {
             Vector3::Up, 
             game->DeltaTime * orbitSpeed));
     pos = parentPlanet->pos + relativePos;
+
+    mesh->SetPosition(pos);
     rotation *= Quaternion::CreateFromAxisAngle(
         Vector3::Up,
         rotationSpeed * game->DeltaTime);
-    mesh->worldMatrix =
+    mesh->SetRotation(rotation);
+
+   /* mesh->worldMatrix =
         Matrix::CreateFromQuaternion(rotation) *
-        Matrix::CreateTranslation(pos);
+        Matrix::CreateTranslation(pos);*/
+
+    if (isOrbit)
+        orbit->SetCenter(parentPlanet->pos);
+
+    mesh->Update();
 }

@@ -141,10 +141,19 @@ void CameraController::Update()
         up = Vector3::Up;
     }
 
+    if (game->InDevice->IsKeyDown(Keys::D8))
+    {
+        OrbitMode = true;
+        targetBody = planetSystem->planets[9];
+        game->Camera->Position = Vector3::Forward * 20.0f;
+        game->Camera->Up = Vector3::Up;
+        up = Vector3::Up;
+    }
+
     if (game->InDevice->IsKeyDown(Keys::D9))
     {
         OrbitMode = true;
-        targetBody = planetSystem->planets[8];
+        targetBody = planetSystem->planets[9];
         game->Camera->Position = Vector3::Forward * 20.0f;
         game->Camera->Up = Vector3::Up;
         up = Vector3::Up;

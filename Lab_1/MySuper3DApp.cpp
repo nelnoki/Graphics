@@ -117,7 +117,7 @@ int main_cpy() {
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		D3D11_CREATE_DEVICE_DEBUG,
+		D3D11_CREATE_DeviceDEBUG,
 		featureLevel,
 		1,
 		D3D11_SDK_VERSION,

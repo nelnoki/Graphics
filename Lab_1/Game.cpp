@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Tools/DataProcesser.h"
 
 Game::Game(LPCWSTR name, int screenWidth, int screenHeight) {
 	Instance = GetModuleHandle(nullptr);
@@ -34,7 +35,7 @@ void Game::PrepareResources() {
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
 		nullptr,
-		D3D11_CREATE_DEVICE_DEBUG,
+		D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_BGRA_SUPPORT,
 		featureLevel,
 		1,
 		D3D11_SDK_VERSION,
@@ -50,6 +51,64 @@ void Game::PrepareResources() {
 	}
 
 	createBackBuffer();
+
+	DepthStencilBuffer = nullptr;
+	DepthStencilView = nullptr;
+
+	CreateDepthBuffer();
+
+	DataProcesser::Initialize(this);
+
+	D3D11_SAMPLER_DESC samplerStateDesc = {};
+	samplerStateDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerStateDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerStateDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerStateDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerStateDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerStateDesc.MinLOD = 0.0f;
+	samplerStateDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	res = Device->CreateSamplerState(&samplerStateDesc, &SamplerState);
+
+
+	CD3D11_RASTERIZER_DESC rastDesc = {};
+
+	rastDesc.CullMode = D3D11_CULL_BACK;
+	rastDesc.FillMode = D3D11_FILL_SOLID;
+	rastDesc.FrontCounterClockwise = true;
+	rastDesc.DepthClipEnable = true;
+
+	res = Device->CreateRasterizerState(&rastDesc, &RastState);
+
+	Context->RSSetState(RastState);
+
+}
+
+void Game::createBackBuffer() {
+	auto res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);	// __uuidof(ID3D11Texture2D)
+	res = Device->CreateRenderTargetView(BackBuffer, nullptr, &RenderView);
+}
+
+void Game::CreateDepthBuffer()
+{
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+
+	depthStencilDesc.Width = Display->ClientWidth;
+	depthStencilDesc.Height = Display->ClientHeight;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+
+	Device->CreateTexture2D(&depthStencilDesc, nullptr, &DepthStencilBuffer);
+
+	Device->CreateDepthStencilView(DepthStencilBuffer, nullptr, &DepthStencilView);
 }
 
 void Game::Initialize() {
@@ -61,8 +120,8 @@ void Game::Initialize() {
 void Game::Run() {
 	PrepareResources();
 	Initialize();
-
-	PrevTime = std::chrono::steady_clock::now();
+	InitTimer();
+	
 	TotalTime = 0;
 	FrameCount = 0;
 	
@@ -71,34 +130,34 @@ void Game::Run() {
 
 	while (!isExitRequested) {
 		MessageHandler(msg, isExitRequested);
+		UpdateTimer();
 		Update();
 	}
 	Exit();
 }
 
 void Game::Draw() {
-	Context->OMSetRenderTargets(1, &RenderView, nullptr);
-
-	float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	Context->ClearRenderTargetView(RenderView, color);
+	//Context->OMSetRenderTargets(1, &RenderView, nullptr);
 
 	for (GameComponent* component : Components) {
 		component->Draw();
 	}
 
-	Context->OMSetRenderTargets(0, nullptr, nullptr);
+	//Context->OMSetRenderTargets(0, nullptr, nullptr);
 
-	SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+	//SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+}
+void Game::InitTimer() {
+	PrevTime = std::chrono::steady_clock::now();
 }
 
-void Game::Update() {
-	PrepareFrame();
-
+void Game::UpdateTimer() {
 	auto	curTime = std::chrono::steady_clock::now();
 	DeltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
 	PrevTime = curTime;
 
 	TotalTime += DeltaTime;
+	TotalestTime += DeltaTime;
 	FrameCount++;
 
 	if (TotalTime > 1.0f) {
@@ -112,8 +171,11 @@ void Game::Update() {
 
 		FrameCount = 0;
 	}
+}
 
+void Game::Update() {
 	UpdateInternal();
+	PrepareFrame();
 	Draw();
 	EndFrame();
 }
@@ -125,7 +187,10 @@ void Game::UpdateInternal() {
 }
 
 void Game::PrepareFrame() {
-		Context->ClearState();
+		/*Context->ClearState();
+		if (DepthStencilView != nullptr)
+			Context->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 
 		D3D11_VIEWPORT viewport = {};
 		viewport.Width = static_cast<float>(Display->ClientWidth);
@@ -135,11 +200,33 @@ void Game::PrepareFrame() {
 		viewport.MinDepth = 0;
 		viewport.MaxDepth = 1.0f;
 
-		Context->RSSetViewports(1, &viewport);
+		Context->RSSetViewports(1, &viewport);*/
+
+
+		Context->ClearState();
+
+		Context->RSSetState(RastState);
+
+		Context->OMSetRenderTargets(1, &RenderView, DepthStencilView);
+
+		Context->VSSetShader(DataProcesser::GetVertexShader("spinny"), nullptr, 0);
+		Context->PSSetShader(DataProcesser::GetPixelShader("spinny"), nullptr, 0);
+
+		Context->PSSetSamplers(0, 1, &SamplerState);
+
+		float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		Context->ClearRenderTargetView(RenderView, color);
+
+		Context->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 }
 
 void Game::EndFrame() {
-	InDevice->EndFrame();
+	//InDevice->EndFrame();
+
+	Context->OMSetRenderTargets(0, nullptr, nullptr);
+
+	SwapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
 
 void Game::DestroyResources() {
@@ -158,6 +245,9 @@ void Game::DestroyResources() {
 
 	BackBuffer->Release();
 	RenderView->Release();
+
+	DepthStencilView->Release();
+	DepthStencilBuffer->Release();
 }
 
 void Game::Exit() {
@@ -181,11 +271,6 @@ void Game::MessageHandler(MSG &msg, bool &isExitRequested)
 	if (msg.message == WM_QUIT) {
 		isExitRequested = true;
 	}
-}
-
-void Game::createBackBuffer() {
-	SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);	// __uuidof(ID3D11Texture2D)
-	Device->CreateRenderTargetView(BackBuffer, nullptr, &RenderView);
 }
 
 LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam) {

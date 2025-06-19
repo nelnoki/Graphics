@@ -19,39 +19,59 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraController.cpp" />
-    <ClCompile Include="Delegates.cpp" />
     <ClCompile Include="Cannon.cpp" />
     <ClCompile Include="CubeComponent.cpp" />
+    <ClCompile Include="Delegates.cpp" />
+    <ClCompile Include="Dependencies\DDSTextureLoader.cpp" />
+    <ClCompile Include="Dependencies\DirectXHelpers.cpp" />
+    <ClCompile Include="Dependencies\pch.cpp" />
     <ClCompile Include="DisplayWin32.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameComponent.cpp" />
     <ClCompile Include="InputDevice.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MySuper3DApp.cpp" />
+    <ClCompile Include="ObjectComponent.cpp" />
+    <ClCompile Include="OrbitComponent.cpp" />
     <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="PlanetGame.cpp" />
     <ClCompile Include="PlanetSystem.cpp" />
     <ClCompile Include="Pong.cpp" />
     <ClCompile Include="SphereComponent.cpp" />
+    <ClCompile Include="Tools\DataProcesser.cpp" />
     <ClCompile Include="TriangleComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseComponent.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraController.h" />
-    <ClInclude Include="Delegates.h" />
     <ClInclude Include="Cannon.h" />
     <ClInclude Include="CubeComponent.h" />
+    <ClInclude Include="Delegates.h" />
+    <ClInclude Include="Dependencies\DDS.h" />
+    <ClInclude Include="Dependencies\DDSTextureLoader.h" />
+    <ClInclude Include="Dependencies\DirectXHelpers.h" />
+    <ClInclude Include="Dependencies\Effects.h" />
+    <ClInclude Include="Dependencies\LoaderHelpers.h" />
+    <ClInclude Include="Dependencies\pch.h" />
+    <ClInclude Include="Dependencies\PlatformHelpers.h" />
     <ClInclude Include="DisplayWin32.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameComponent.h" />
     <ClInclude Include="InputDevice.h" />
     <ClInclude Include="Keys.h" />
+    <ClInclude Include="ObjectComponent.h" />
+    <ClInclude Include="OrbitComponent.h" />
     <ClInclude Include="Planet.h" />
+    <ClInclude Include="PlanetGame.h" />
     <ClInclude Include="PlanetSystem.h" />
     <ClInclude Include="Pong.h" />
     <ClInclude Include="SphereComponent.h" />
+    <ClInclude Include="Tools\DataProcesser.h" />
     <ClInclude Include="TriangleComponent.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

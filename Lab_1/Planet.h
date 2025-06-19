@@ -1,6 +1,9 @@
 #pragma once
 #include "Game.h"
-#include "TriangleComponent.h"
+#include "BaseComponent.h"
+#include "SphereComponent.h"
+#include "ObjectComponent.h"
+#include "OrbitComponent.h"
 
 class Planet {
 public:
@@ -10,8 +13,11 @@ public:
 
 	Game* game;
 
-	TriangleComponent* mesh;
+	ObjectComponent* mesh;
 
+	OrbitComponent* orbit;
+	bool isOrbit = true;
+	
 	Vector3 pos = { 0.0f, 0.0f, 0.0f };
 
 	float rotationAngle = 0.0f;
